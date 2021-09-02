@@ -1,0 +1,93 @@
+---
+kind: pipeline
+type: docker
+name: debio_frontend_deploy
+trigger:
+  branch:
+    - development
+  event:
+    - pull_request
+
+platform:
+  os: linux
+  arch: amd64
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: whitelist
+    host:
+      path: /etc/docker/daemon.json
+  - name: toolkit
+    host:
+      path: /data/drone_data
+
+steps:
+  - name: build - devel
+    pull: if-not-exists
+    image: plugins/ansible:1
+    volumes:
+      - name: toolkit
+        path: /data/drone_data
+      - name: whitelist
+        path: /etc/docker/daemon.json
+      - name: dockersock
+        path: /var/run/docker.sock
+    settings:
+      playbook: ansible/playbook.yml
+      galaxy: ansible/requirements.yml
+      inventory: ansible/inventory
+      syntax_check: true
+    when:
+      branch:
+        - development
+
+---
+kind: secret
+name: devel_host
+get:
+  path: drone_development/deploy_target
+  name: devel_host
+---
+kind: secret
+name: devel_key
+get:
+  path: drone_development/deploy_target
+  name: devel_key
+---
+kind: secret
+name: devel_uname
+get:
+  path: drone_development/deploy_target
+  name: devel_uname
+---
+kind: secret
+name: stg_host
+get:
+  path: drone_staging/deploy_target
+  name: stg_host
+---
+kind: secret
+name: stg_key
+get:
+  path: drone_staging/deploy_target
+  name: stg_key
+---
+kind: secret
+name: stg_uname
+get:
+  path: drone_staging/deploy_target
+  name: stg_uname
+---
+kind: secret
+name: discord_id
+get:
+  path: drone_common_config/webhook
+  name: discord_id
+---
+kind: secret
+name: discord_token
+get:
+  path: drone_common_config/webhook
+  name: discord_token
