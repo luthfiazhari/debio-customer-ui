@@ -5,7 +5,6 @@
 
     background: white;
     border-radius: 16px;
-    padding-bottom: 70px;
 
     box-shadow: 0px 2px 10px 0px #0000001A;
 

@@ -32,6 +32,31 @@ const indexRoutes = [{
         name: 'registration-successful',
         component: () => import(/* webpackChunkName */ '../../views/LandingPage/GenerateAccount/RegistrationSuccessful'),
       },
+      {
+        path: '/sign-in',
+        name: 'sign-in',
+        component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn'),
+      },
+      {
+        path: '/sign-in',
+        name: 'no-account',
+        component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/ImportKeystore'),
+      },
+      {
+        path: '/sign-in',
+        name: 'import-keystore',
+        component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/ImportKeystore/SelectFile'),
+      },
+      {
+        path: '/sign-in',
+        name: 'input-password',
+        component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/InputPassword'),
+      },
+      {
+        path: '/sign-in',
+        name: 'forgot-password',
+        component: () => import(/* webpackChunkName */ '../../views/LandingPage/SignIn/ForgotPassword'),
+      },
     ]
   },
 ]

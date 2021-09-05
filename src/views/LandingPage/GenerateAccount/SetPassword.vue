@@ -50,14 +50,11 @@
         width: 504px;
         height: 63px;
 
-        /* body-text-1 */
-
         font-family: Raleway;
         font-style: normal;
         font-weight: normal;
         font-size: 18px;
         line-height: 150%;
-        /* or 27px */
 
         display: flex;
         align-items: center;
