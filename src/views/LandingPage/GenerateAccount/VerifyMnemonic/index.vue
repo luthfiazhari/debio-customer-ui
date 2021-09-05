@@ -137,12 +137,7 @@ export default {
         },
 
         verifyMnemonic() {
-            this.$router.push({
-                name: 'verify-mnemonic',
-                params: { 
-                    mnemonicCollection: this.mnemonicCollection
-                }
-            });
+            this.$router.push({name: 'set-password'});
         },
         
         copyText(){
