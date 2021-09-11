@@ -44,11 +44,12 @@
 
 <script>
 import LandingPagePopUp from './LandingPagePopUp.vue'
-
+import Button from '@/common/components/Button'
 export default {
     name: 'MainPage',
     components: {
         LandingPagePopUp,
+        Button
     },
 }
 </script>
