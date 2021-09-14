@@ -175,8 +175,8 @@ export default {
     width: String,
   },
   data: () => ({
-    width: "1000px",
-    color: "black",
+    // width: "1000px",
+    // color: "black",
     style: "background-image: linear-gradient(to right, #C400A5 1%, white 10%)"
   }),
 
