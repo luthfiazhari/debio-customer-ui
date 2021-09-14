@@ -1,11 +1,9 @@
-import routeGuard from "@/common/lib/route-guard";
-
-console.log(routeGuard, 'router guard')
+// import routeGuard from "@/common/lib/route-guard";//here too
 
 const customerRoutes = [{
   path: '/customer',
   component: () => import(/* webpackChunkName */ '../../views/Dashboard/Customer'),
-  // beforeEnter: routeGuard.checkIsLoggedIn,
+  // beforeEnter: routeGuard.checkIsLoggedIn, //open if other page done
   children: [
     {
       path: '/',
@@ -13,11 +11,10 @@ const customerRoutes = [{
       meta: {
         pageHeader: 'Home',
         drawerButtons: [
-          { text: "Dashboard", disabled: false, active: true, route: { name: "customer-home" } },
-          { text: "My Test", disabled: false, route: { name: "" } },
-          { text: "My EMR", disabled: false, route: { name: ""} },
-          { text: "Order History", disabled: false, route: { name: "" } },
-          // { text: "Customer Care", href: "https://docs.debio.network/getting-started" },
+          { text: "Dashboard", disabled: false, active: true, route: { name: "customer-home" }, img: "@/assets/grid.png" },
+          { text: "My Test", disabled: false, active: false, route: { name: "" }, img: "@/assets/box.png" },
+          { text: "My EMR", disabled: false, active: false, route: { name: ""}, img: "@/assets/file-text.png" },
+          { text: "Order History", disabled: false, active: false, route: { name: "" }, img: "@/assets/credit-card.png" },
         ]
       },
       component: () => import(/* webpackChunkName */ '../../views/Dashboard/Customer/Home')
