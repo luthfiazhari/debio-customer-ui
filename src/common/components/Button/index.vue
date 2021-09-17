@@ -17,14 +17,11 @@ export default {
   props: {
     color: { type: String, default: 'white'},
     // dark: { type: Boolean, default: false },
-    // disabled: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
     loading: { type: Boolean, default: false },
     width: { type: [String, Number], default: "203px" },
     outlined: { type: Boolean, default: false },
     height: String,
-  },
-  mounted() {
-    this.changeStyle()
   },
   methods: {
     onClick() {

@@ -49,7 +49,7 @@ export default {
   name: 'DataTable',
   props: {
     headers: { type: [Object, Array]},
-    items: { type: Object},
+    items: { type: [Object, Array]},
     additionalClass: { type: String},
     sortBy: { type: Array},
     sortDesc: { type: Array},
@@ -58,11 +58,15 @@ export default {
   },
   data: () => ({
     page: 1,
+    pageCount: 0,
     expanded: [],
+    entriesPerPage: 10,
+
 
   }),
   mounted() {
-
+    console.log(this.items)
+    console.log('di dalam component table')
   },
   methods: {
     clickedRow() {
@@ -89,8 +93,8 @@ export default {
     },
 
     to() {
-      if (this.page * this.entriesPerPage > this.totalItemLength) {
-        return this.totalItemLength
+      if (this.page * this.entriesPerPage > this.items.length) {
+        return this.items.length
       }
       return this.page * this.entriesPerPage
     },
@@ -133,22 +137,23 @@ export default {
   margin-top: 24px;
 
   /** BRI text-body */
-  font-size: 14px;
+  font-size: 9px;
   line-height: 18px;
   letter-spacing: 0.1px;
   /** */
 
   thead {
-    background-color: $color-secondary !important;
+    background-color: #f5f7f9 !important;
 
     th {
       padding-top: 8px !important;
       padding-bottom: 8px !important;
+      height: 29px !important;
       /* white-space: nowrap; */
       * {
-        color: white !important;
+        color: black !important;
         /** BRI text-body */
-        font-size: 14px;
+        font-size: 9px;
         line-height: 18px;
         letter-spacing: 0.1px;
         /** */
@@ -163,6 +168,21 @@ export default {
       }
     }
   }
+
+  tbody {
+    td {
+      * {
+        height: 57.3px !important;
+      }
+    }
+
+    tr {
+      * {
+        font-size: 9px !important;
+      }
+    }
+  }
+
   .footer {
     height: 72px;
 

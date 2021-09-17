@@ -6,24 +6,34 @@
       DataTable(
         :headers="headers"
         :items="dummyItems"
-        :search="search"
         :sortBy="['timestamp']"
         :sort-by="[true]"
         :loading="isLoading"
-        
       )
+        template(v-slot:[`item.dna_sample_tracking_id`]="{item}") {{item.dna_sample_tracking_id}}
+        template(v-slot:[`item.timestamp`]="{item}") {{item.orderDate}}
+        template(v-slot:[`item.state`]="{item}") {{item.status}}
+        //- template(v-slot:[`item.actions`]="{item}")
+        //-   v-container
+        //-     Button(
+        //-       class="btn-eye"
+
+        //-     ) button
+
+    div
+      p harusnya di bawah table
 
 
 </template>
 
 <script>
 import { mapState } from "vuex";
-import Button from '@/common/components/Button'
-import DataTable from '@/common/components/DataTable'
+import Button from "@/common/components/Button"
+import DataTable from "@/common/components/DataTable"
 
 export default {
   name: 'CustomerHome',
-  comments: {
+  components: {
     Button,
     DataTable
   },
