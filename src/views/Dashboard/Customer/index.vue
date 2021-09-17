@@ -1,7 +1,8 @@
 <template lang="pug">
     v-app
       NavigationDrawer
-      router-view
+      v-main
+        router-view
 </template>
 
 <script>
