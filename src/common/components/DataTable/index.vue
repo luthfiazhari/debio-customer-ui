@@ -12,7 +12,7 @@
       :page.sync="page"
       :class="additionalClass"
       hide-default-footer
-      :custom-filter="customFilter ? customFilter : defaultFilter"
+      :custom-filter="_customFilter"
       :sort-by="sortBy"
       :sort-desc="sortDesc"
       :loading="loading"
@@ -61,12 +61,9 @@ export default {
   data: () => ({
     page: 1,
     pageCount: 0,
-    // expanded: [],
     entriesPerPage: 10,
     
   }),
-  mounted() {
-  },
   methods: {
     clickedRow() {
       console.log('clicked')
@@ -109,17 +106,18 @@ export default {
         return this.search
       },
       set(val) {
-        console.log(val)
         this.$emit('input', val)
       }
     },
+    _customFilter() {
+      return this.customFilter ? this.customFilter : this.defaultFilter
+    }
 
   }
 }
 </script>
 
 <style lang="scss">
-// @import '@/styles/variables.scss';
 @import '/src/styles/variables.scss';
 
 .degenics-datatable-card {
