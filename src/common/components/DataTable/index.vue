@@ -180,6 +180,7 @@ export default {
     tr {
       * {
         font-size: 9px !important;
+        border-bottom: #f5f7f9 !important;
       }
     }
   }
