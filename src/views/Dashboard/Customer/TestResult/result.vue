@@ -1,47 +1,66 @@
 <template lang="pug">
   div
     v-container
-      v-row
-        v-col(cols="12" md="8")
-          ui-debio-card(width="100%")
-            template
-              v-progress-linear(
-                v-if="resultLoading"
-                indeterminate
-                color="primary"
-              )
-              v-card-text
-                embed(
-                  :src="reportResult"
-                  type="application/pdf"
-                  v-if="isDataPdf"
-                  scrolling="auto"
-                  height="1000px"
-                  width="100%"
+      ui-debio-card(width="100%")
+        v-row
+          v-col(cols="12" md="9")
+            ui-debio-card(width="100%" height="100%" class="mt-2")
+              template
+                v-progress-linear(
+                  v-if="resultLoading"
+                  indeterminate
+                  color="primary"
                 )
-                span(v-else) {{reportResult}}
-        v-col(cols="12" md="4")
-          //- div(class="mb-2")
-          div(v-for="(file, index) in files" :key="file.name" class="mb-2")
+                v-card-text
+                  embed(
+                    :src="reportResult"
+                    type="application/pdf"
+                    v-if="isDataPdf"
+                    scrolling="auto"
+                    height="1000px"
+                    width="100%"
+                  )
+                  span(v-else) {{reportResult}}
+          v-col(cols="12" md="3")
+            //- div(class="mb-2")
+            div(v-for="(file, index) in files" :key="file.name" class="mt-2")
+              ui-debio-card(
+                :title="file.fileTitle"
+                :sub-title="file.fileSubTitle"
+                tiny-card
+                with-icon
+              )
+                ui-debio-icon(
+                  slot="icon-prepend"
+                  size="10"
+                  :icon="downloadIcon"
+                  stroke
+                )
             ui-debio-card(
+              class="mt-2"
               tiny-card
               with-icon
-            )
-              ui-debio-icon(
-                slot="icon"
-                :icon="download"
+              title="Data Bounty"
+              sub-title="Provide your data anonymously and get DBIO Reward"
               )
+                ui-debio-icon(
+                  size="10"
+                  slot="icon-prepend"
+                  :icon="debioIcon"
+                  stroke
+                )
 
 </template>
 
 <script>
-import { download } from "@/common/icons"
+import { downloadIcon, debioIcon } from "@/common/icons"
 
 export default {
   name: "test-result",
   components: {},
   data: () => ({
-    download,
+    downloadIcon,
+    debioIcon,
     files: [
       {
         fileType: "report",
@@ -64,6 +83,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
 </style>
