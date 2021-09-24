@@ -1,0 +1,36 @@
+<template lang="pug">
+  v-btn(
+    depressed
+    :color="color"
+    :width="width"
+    @click="onClick"
+    :disabled="disabled"
+    :loading="loading"
+    :outlined="outlined"
+    :height="height")
+    slot
+</template>
+
+<script>
+export default {
+  name: 'Button',
+  props: {
+    color: { type: String, default: 'white'},
+    // dark: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    loading: { type: Boolean, default: false },
+    width: { type: [String, Number], default: "203px" },
+    outlined: { type: Boolean, default: false },
+    height: String,
+  },
+  methods: {
+    onClick() {
+      this.$emit('click')
+    },
+  }
+}
+</script>
+
+<style>
+
+</style>

@@ -1,45 +1,52 @@
 <template lang="pug">
-  v-card(class="degenics-datatable-card elevation-2 ma-15")
-    slot(name="prepend")
 
-    //- <!-- Data Table -->
-    v-data-table(
-      class="degenics-data-table"
-      :headers="headers"
-      :items="items"
-      :items-per-page="5"
-      :search="dataTableSearchVal"
-      :page.sync="page"
-      :class="additionalClass"
-      hide-default-footer
-      :custom-filter="_customFilter"
-      :sort-by="sortBy"
-      :sort-desc="sortDesc"
-      :loading="loading"
-      :show-expand="expand"
-      item-key="id"
-      @click:row="clickedRow"
-      :loading-text="computedLoadingText"
-      :disable-sort="disableSort"
-    )
-      //- <!-- Slots for row formatting -->
-      template(v-for="(slot, name) in $scopedSlots" v-slot:[name]="item")
-        slot(:name="name" v-bind="item")
+  div
+    div
+      p tetsing
+
+  
+    v-card(class="degenics-datatable-card elevation-2 ma-15")
+      slot(name="prepend")
+
+      //- <!-- Data Table -->
+      v-data-table(
+        
+        class="degenics-data-table"
+        :headers="headers"
+        :items="items"
+        :items-per-page="5"
+        :search="dataTableSearchVal"
+        :page.sync="page"
+        :class="additionalClass"
+        hide-default-footer
+        :custom-filter="_customFilter"
+        :sort-by="sortBy"
+        :sort-desc="sortDesc"
+        :loading="loading"
+        :show-expand="expand"
+        item-key="id"
+        @click:row="clickedRow"
+        :loading-text="computedLoadingText"
+        :disable-sort="disableSort"
+      )
+        //- <!-- Slots for row formatting -->
+        template(v-for="(slot, name) in $scopedSlots" v-slot:[name]="item")
+          slot(:name="name" v-bind="item")
 
 
-    //- <!-- Custom Footer -->
-    template(v-slot:footer)
-      div(class="footer d-flex justify-space-between align-center flex-wrap")
-        div(
-          class="pagination-info"
-        ) Showing {{ from() }} to {{ to() }} of {{ total() }} entries
-        v-pagination(
-          v-model="page"
-          :length="pageCount"
-          :total-visible="10"
-          circle
-          color="secondary"
-        )
+      //- <!-- Custom Footer -->
+      template(v-slot:footer)
+        div(class="footer d-flex justify-space-between align-center flex-wrap")
+          div(
+            class="pagination-info"
+          ) Showing {{ from() }} to {{ to() }} of {{ total() }} entries
+          v-pagination(
+            v-model="page"
+            :length="pageCount"
+            :total-visible="10"
+            circle
+            color="secondary"
+          )
 
 </template>
 
@@ -62,8 +69,13 @@ export default {
     page: 1,
     pageCount: 0,
     entriesPerPage: 10,
+    hideTableStatus: true,
     
   }),
+  mounted() {
+    this.hideTable()
+  },
+
   methods: {
     clickedRow() {
       console.log('clicked')
@@ -99,6 +111,16 @@ export default {
       return this.totalItemLength
     },
     /** ----------------- */
+
+    hideTable() {
+      console.log('hide table');
+      console.log(this.items.length, 'items length');
+      console.log(this.hideTableStatus, 'before');
+      if (this.items.length < 1) {
+        this.hideTableStatus = true
+      }
+      console.log(this.hideTableStatus, 'after');
+    }
   },
   computed: {
     dataTableSearchVal: {
