@@ -121,13 +121,18 @@
             :width="width"
             :height="'50px'"
           )
-            ui-debio-icon(:icon="creditCard" size="10" slot="icon-prepend" fill)
+            //- ui-debio-icon(
+            //-   slot="icon-apend"
+            //-   size="10"
+            //-   :icon="iconLoader"
+            //-   stroke
+            //- )
             v-img(
               class="mr-2 ml-2 shrink"
               apend
               center
               contain
-              :src="item.img"
+              :src="iconLoader"
               width="24px"
               height="24px"
             )
@@ -167,10 +172,10 @@
 
 import Button from '@/common/components/Button'
 import { 
-  creditCard,
-  box,
-  fileText,
-  grid,
+  creditCardIcon,
+  boxIcon,
+  fileTextIcon,
+  gridIcon,
 } from "@/common/icons"
 
 export default {
@@ -185,14 +190,14 @@ export default {
     // width: "1000px",
     // color: "black",
     style: "background-image: linear-gradient(to right, #C400A5 1%, white 10%)",
-    creditCard,
-    box,
-    fileText,
-    grid,
+    creditCardIcon,
+    boxIcon,
+    fileTextIcon,
+    gridIcon,
   }),
 
   mounted() {
-    console.log(this.drawerButtons, 'drawerBUtton')
+    // console.log(this.drawerButtons, 'drawerBUtton')
   },
 
   methods: {
@@ -214,6 +219,22 @@ export default {
 
     openHref(href){
       window.open(href, '_blank').focus();
+    },
+
+    iconLoader() {
+      console.log('icon loader')
+      if (this.drawerButtons.text == "Dashboard") {
+        return this.drawerButtons.img
+      }
+      if (this.drawerButtons.text == "My Test") {
+        return this.drawerButtons.img
+      }
+      if (this.drawerButtons.text == "My EMR") {
+        return this.drawerButtons.img
+      }
+      if (this.drawerButtons.text == "Order History") {
+        return this.drawerButtons.img
+      }
     }
   },
 
@@ -223,10 +244,14 @@ export default {
         return this.$route.meta.drawerButtons
       }
       return []
+    },
+    
+    dashboardIcon() {
+      if (this.drawerButtons.text == "Dashboard") {
+        return this.gridIcon
+      }
+      return ""
     }
-    // iconLoader() {
-
-    // }
   }
 }
 </script>

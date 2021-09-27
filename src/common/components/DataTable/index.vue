@@ -5,10 +5,12 @@
       p tetsing
 
   
-    v-card(class="degenics-datatable-card elevation-2 ma-15")
+    v-card(class="degenics-datatable-card elevation-2 ma-15" v-show="hideTableStatus")
       slot(name="prepend")
-
+      div(v-show="hideTableStatus == true") dalem table
+      //- div(v-else) else dalem table
       //- <!-- Data Table -->
+
       v-data-table(
         
         class="degenics-data-table"
@@ -69,7 +71,8 @@ export default {
     page: 1,
     pageCount: 0,
     entriesPerPage: 10,
-    hideTableStatus: true,
+    hideTableStatus: false,
+    storedItems: []
     
   }),
   mounted() {
@@ -133,6 +136,10 @@ export default {
     },
     _customFilter() {
       return this.customFilter ? this.customFilter : this.defaultFilter
+    },
+
+    dataItems() {
+      return this.items
     }
 
   }

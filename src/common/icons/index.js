@@ -25,6 +25,10 @@ import hospitalIcon from "./hospital"
 import checkCircleIcon from "./checkCircle"
 import lockIcon from "./lock"
 import trashIcon from "./trash"
+import octopusIcon from "./octopus"//import component icon
+import boxIcon from "./box"
+import gridIcon from "./grid"
+import fileTextIcon from "./fileText"//to here
 
 export {
   creditCardIcon,
@@ -53,5 +57,9 @@ export {
   hospitalIcon,
   checkCircleIcon,
   lockIcon,
-  trashIcon
+  trashIcon,
+  octopusIcon,
+  boxIcon,
+  gridIcon,
+  fileTextIcon
 }
