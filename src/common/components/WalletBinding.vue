@@ -87,15 +87,20 @@ import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { getEthFromFaucet, getDaicFromFaucet } from "@/common/lib/faucet"
 import localStorage from "@/common/lib/local-storage"
 import Button from "@/common/components/Button"
+
 export default {
   name: "WalletBinding",
+
   components: {
     Button
   },
+
   props: {
     show: Boolean
   },
+
   mixins: [serviceHandlerMixin],
+
   data: () => ({
     error: "",
     password: "",
@@ -106,23 +111,40 @@ export default {
     accountList: [],
     inputPassword: false,
     selectAccount: null,
-    apastow: null
   }),
+
   computed: {
     ...mapState({
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       metamaskWalletAddress: (state) => state.metamask.metamaskWalletAddress
-    })
+    }),
+
+    watch: {
+      show() {
+        if (this.show) {
+          this.error = "";
+          this.loading = false;
+          this.putAccount = false;
+          this.putWallet = true;
+          this.inputPassword = false;
+          this.isLoading = false;
+        }
+      },
+    }
   },
+
   methods: {
+
     ...mapMutations({
       setMetamaskAddress: "metamask/SET_WALLET_ADDRESS"
     }),
+    
     async getMunnyFromFaucet(address) {
       await getEthFromFaucet(address)
       await getDaicFromFaucet(address)
     },
+
     async setWallet(walletName) {
       this.loading = true
       this.ethAccount = await handleSetWallet(walletName, this.metamaskWalletAddress)
@@ -148,6 +170,7 @@ export default {
         this.error = err.message
       }
     },
+
     closeDialog() {
       this.error = ""
       this.loading = false
