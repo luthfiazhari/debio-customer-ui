@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-card(class="degenics-datatable-card elevation-2 ma-15")
+  v-card(class="degenics-datatable-card elevation-0")
     slot(name="prepend")
 
     //- <!-- Data Table -->
@@ -66,7 +66,7 @@ export default {
   }),
   methods: {
     clickedRow() {
-      console.log('clicked')
+      console.log('clicked go to detail')
     },
     computedLoadingText() {
       return this.loadingText ? this.loadingText : 'Loading.. Please wait'
@@ -123,7 +123,6 @@ export default {
 .degenics-datatable-card {
   border-radius: 8px !important;
   overflow: hidden !important;
-  padding: 40px;
 
   box-shadow: unset !important;
   filter: drop-shadow(0px 7px 20px rgba(0, 0, 0, 0.07));
@@ -132,7 +131,6 @@ export default {
 .degenics-data-table {
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 24px;
 
   /** BRI text-body */
   font-size: 9px;
