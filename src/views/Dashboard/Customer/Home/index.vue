@@ -46,6 +46,7 @@
               :height="'25px'"
               outlined
               :color="'#5640A5'"
+              @click="goToOrderHistory"
             ) View All
       div.bodyContent
         DataTable.content(
@@ -101,6 +102,7 @@
               :height="'25px'"
               outlined
               :color="'#5640A5'"
+              @click="goToOrderHistory"
             ) View All
       div.bodyContent
         DataTable.content(
@@ -237,8 +239,8 @@ export default {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
-    }),
-    this.getOrderHistory()
+    })
+    // this.getOrderHistory()
   },
 
   methods: {
@@ -329,7 +331,7 @@ export default {
     gotoDetailOrder(order) {
       this.$router.push({
         name: "order-history-detail",
-        params: { number: order.number }
+        params: { number: order.number }//butuh penyesuaian dengan data dari substrate
       })
     }
   },
