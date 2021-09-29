@@ -46,8 +46,8 @@
       v-select(
         dense
         :items="categories"
-        item-value="labData"
-        item-text="labName"
+        item-text="service_categories"
+        item-value="service_categories"
         menu-props="auto"
         placeholder="Category"
         :disabled="!city"
@@ -70,8 +70,8 @@
 
 <script>
 import { mapState, mapMutations } from "vuex"
-import categories from "@/common/constants/categories"
 import { getLocations, getStates, getCities } from "@/common/lib/location"
+import { getCategories } from "@/common/lib/categories"
 import Button from "@/common/components/Button"
 
 export default {
@@ -103,29 +103,37 @@ export default {
   
   async mounted() {
     await this.getCountries()
+    await this.getServiceCategory()
     this.coinName = this.configApp.tokenName
-    this.categories = categories
   },
 
   methods: {
     ...mapMutations({
       setCategory: "lab/SET_CATEGORY"
     }),
+
+    async getServiceCategory() {
+      const { data : data } = await getCategories()
+      this.categories = data
+    },
       
     async getCountries() {
       const { data : { data }} = await getLocations()
       this.countries = data
     },
+
     async onCountryChange(selectedCountry) {
       const { data : { data }} = await getStates(selectedCountry)
       this.states = data
       this.country = selectedCountry
     },
+
     async onStateChange(selectedState) {
       const { data : { data }} = await getCities(this.country, selectedState)
       this.cities = data
       this.state = selectedState
     },
+    
     async onCityChange(selectedCity) {
       this.city = selectedCity.state_code
     },
