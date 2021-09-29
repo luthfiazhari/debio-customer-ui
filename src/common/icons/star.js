@@ -1,0 +1,3 @@
+export default `
+  <path d="M20.0007 3.83398L25.1507 14.2673L36.6673 15.9507L28.334 24.0673L30.3007 35.534L20.0007 30.1173L9.70065 35.534L11.6673 24.0673L3.33398 15.9507L14.8507 14.2673L20.0007 3.83398Z" stroke="#C400A5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+`

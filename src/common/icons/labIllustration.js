@@ -129,7 +129,7 @@ export default `
   </g>
   <defs>
   <clipPath id="clip0">
-  <rect width="86" height="97" fill="white" transform="translate(7 1)"/>
+  <rect width="86" height="97" fill="white"/>
   </clipPath>
   </defs>
 `

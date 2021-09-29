@@ -28,6 +28,28 @@ import hospitalIcon from "./hospital"
 import checkCircleIcon from "./checkCircle"
 import lockIcon from "./lock"
 import trashIcon from "./trash"
+import mytestIllustration from "./mytestIllustration"
+import cottonSwabIcon from "./cottonSwab"
+import scissorIcon from "./scissor"
+import glassCupIcon from "./glassCup"
+import latexGlovesIcon from "./latexGloves"
+import penIcon from "./pen"
+import smallPaperEnvelopeIcon from "./smallPaperEnvelope"
+import largePaperEnvelopeIcon from "./largePaperEnvelope"
+import starIcon from "./star"
+import collectionStep1 from "./collectionStep1"
+import collectionStep2 from "./collectionStep2"
+import collectionStep3 from "./collectionStep3"
+import collectionStep4 from "./collectionStep4"
+import collectionStep5 from "./collectionStep5"
+import collectionStep6 from "./collectionStep6"
+import collectionStep7 from "./collectionStep7"
+import collectionStep8 from "./collectionStep8"
+import collectionStep9 from "./collectionStep9"
+import collectionStep10 from "./collectionStep10"
+import collectionStep11 from "./collectionStep11"
+import collectionStep12 from "./collectionStep12"
+import collectionStep13 from "./collectionStep13"
 
 export {
   creditCardIcon,
@@ -59,5 +81,27 @@ export {
   hospitalIcon,
   checkCircleIcon,
   lockIcon,
-  trashIcon
+  trashIcon,
+  mytestIllustration,
+  cottonSwabIcon,
+  scissorIcon,
+  glassCupIcon,
+  latexGlovesIcon,
+  penIcon,
+  smallPaperEnvelopeIcon,
+  largePaperEnvelopeIcon,
+  starIcon,
+  collectionStep1,
+  collectionStep2,
+  collectionStep3,
+  collectionStep4,
+  collectionStep5,
+  collectionStep6,
+  collectionStep7,
+  collectionStep8,
+  collectionStep9,
+  collectionStep10,
+  collectionStep11,
+  collectionStep12,
+  collectionStep13
 }
