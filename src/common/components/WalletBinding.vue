@@ -122,14 +122,14 @@ export default {
 
     watch: {
       show() {
-        if (this.show) {
-          this.error = "";
-          this.loading = false;
-          this.putAccount = false;
-          this.putWallet = true;
-          this.inputPassword = false;
-          this.isLoading = false;
-        }
+        if (!this.show) return
+  
+        this.error = "";
+        this.loading = false;
+        this.putAccount = false;
+        this.putWallet = true;
+        this.inputPassword = false;
+        this.isLoading = false;
       },
     }
   },
