@@ -67,9 +67,7 @@ export default {
   },
 
   async mounted () {
-    if (!this.labs.length) {
-      this.showNoLab = true
-    }
+    if (!this.labs.length) this.showNoLab = true
   },
 
   methods: {
@@ -98,26 +96,20 @@ export default {
   @import "@/common/styles/mixins.sass"
 
   .card-title 
-    font-size: 1rem
-    margin-left: 3%
-    padding-top: 2%
+    @include body-text-2
 
   .card-sub-title 
-    font-size: 1rem
-    margin-left: 3%
-    margin-bottom: 3%
+    margin-bottom: 2%
     margin-top: 2%
     color:#F92020
+    @include body-text-2
 
   .card-body 
-    font-size: 0.813rem
-    margin-left: 3%
-    margin-right: 3%
-
+    @include body-text-3
+    
   .no-lab-card 
     padding: 5%
-    margin-bottom: 4%
-    margin-left: 4%
-    margin-right: 4%
+    margin: 4%
     border-radius: 4
+
 </style>

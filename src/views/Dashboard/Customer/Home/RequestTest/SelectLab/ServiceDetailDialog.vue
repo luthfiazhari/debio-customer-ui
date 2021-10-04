@@ -80,7 +80,6 @@ export default {
     },
 
     onSelect () {
-      console.log("HHH")
       this.$router.push({ name: "customer-request-test-checkout" })
     },
 

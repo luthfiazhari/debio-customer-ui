@@ -114,7 +114,6 @@ export default {
     },
 
     toInstruction () {
-      console.log("go to instruction page")
       // TODO : to instruction page
     }
   }
