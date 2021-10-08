@@ -21,15 +21,15 @@ export async function fulfillOrder(api, pair, order_id) {
             info
             if (error.isModule) {
               // for module errors, we have the section indexed, lookup
-              const decoded = api.registry.findMetaError(error.asModule);
-              const { documentation, method, section } = decoded;
+              const decoded = api.registry.findMetaError(error.asModule)
+              const { documentation, method, section } = decoded
 
-              console.log(`${section}.${method}: ${documentation.join(' ')}`);
+              console.log(`${section}.${method}: ${documentation.join(" ")}`)
             } else {
               // Other, CannotLookup, BadOrigin, no extra info
-              console.log(error.toString());
+              console.log(error.toString())
             }
-          });
+          })
       }
     })
 

@@ -50,6 +50,13 @@ import collectionStep10 from "./collectionStep10"
 import collectionStep11 from "./collectionStep11"
 import collectionStep12 from "./collectionStep12"
 import collectionStep13 from "./collectionStep13"
+import weightLifterIcon from "./weightLifter"
+import microscopeIcon from "./microscope"
+import registeredBanner from "./registeredBanner"
+import receivedBanner from "./receivedBanner"
+import wetWorkBanner from "./wetworkBanner"
+import resultReadyBanner from "./resultReadyBanner"
+import qualityControlBanner from "./qualityControlBanner"
 
 export {
   creditCardIcon,
@@ -103,5 +110,12 @@ export {
   collectionStep10,
   collectionStep11,
   collectionStep12,
-  collectionStep13
+  collectionStep13,
+  weightLifterIcon,
+  microscopeIcon,
+  registeredBanner,
+  receivedBanner,
+  wetWorkBanner,
+  resultReadyBanner,
+  qualityControlBanner
 }

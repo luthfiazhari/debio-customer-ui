@@ -165,6 +165,28 @@ export default {
         timestamp: "1631849952000",
         title: "SNP Microarray",
         updated_at: "20 Jan 2021"
+      },
+      {
+        dna_sample_tracking_id: "EYO6073POHAY",
+        icon: "mdi-dna",
+        labName: "32andme",
+        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
+        orderDate: "20 Jan 2021",
+        status: "Canceled",
+        timestamp: "1631849952000",
+        title: "SNP Microarray",
+        updated_at: "20 Jan 2021"
+      },
+      {
+        dna_sample_tracking_id: "EYO6073POHAY",
+        icon: "mdi-dna",
+        labName: "32andme",
+        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
+        orderDate: "20 Jan 2021",
+        status: "Canceled",
+        timestamp: "1631849952000",
+        title: "SNP Microarray",
+        updated_at: "20 Jan 2021"
       }
     ]
   }),
