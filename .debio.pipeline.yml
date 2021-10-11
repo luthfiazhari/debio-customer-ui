@@ -289,6 +289,18 @@ get:
   name: telegram_bot_token
 ---
 kind: secret
+name: telegram_channel_id
+get:
+  path: drone_common_config/webhook
+  name: telegram_channel_id
+---
+kind: secret
+name: telegram_bot_token
+get:
+  path: drone_common_config/webhook
+  name: telegram_bot_token
+---
+kind: secret
 name: deploy_auth
 get:
   path: drone_common_config/file_path
