@@ -12,7 +12,7 @@
             v-col
               div.leftSection.box
                 div.topRow
-                  div
+                  div.titleHead
                     span Lab details
                   div
                     ui-debio-card(
@@ -21,7 +21,7 @@
                     )
                       div.box
                         ui-debio-icon(
-                          :icon="microscpeIcon"
+                          :icon="microscopeIcon"
                           :size="52"
                           stroke
                           color="linear-gradient(81.43deg, #6344D0 2.53%, #9D82FF 100%)"
@@ -64,7 +64,7 @@
 
 <script>
 import {
-  microscpeIcon,
+  microscopeIcon,
   weightLifterIcon,
   registeredBanner, //"0 0 182 135" size 185
   receivedBanner, //"-20 0 300 135" size 300
@@ -78,7 +78,7 @@ export default {
   name: "OrderHistoryDetail",
   components: { Banner },
   data: () => ({
-    microscpeIcon,
+    microscopeIcon,
     weightLifterIcon,
     registeredBanner,
     receivedBanner,
@@ -161,6 +161,8 @@ export default {
 
     .rightSection
 
+    .titleHead
+      margin: 0 0 0 17px
     .imageBanner
       width: 481px
       height:184px

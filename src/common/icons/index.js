@@ -54,7 +54,7 @@ import weightLifterIcon from "./weightLifter"
 import microscopeIcon from "./microscope"
 import registeredBanner from "./registeredBanner"
 import receivedBanner from "./receivedBanner"
-import wetWorkBanner from "./wetworkBanner"
+import wetworkBanner from "./wetworkBanner"
 import resultReadyBanner from "./resultReadyBanner"
 import qualityControlBanner from "./qualityControlBanner"
 
@@ -115,7 +115,7 @@ export {
   microscopeIcon,
   registeredBanner,
   receivedBanner,
-  wetWorkBanner,
+  wetworkBanner,
   resultReadyBanner,
   qualityControlBanner
 }

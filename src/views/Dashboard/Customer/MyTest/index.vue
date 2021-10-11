@@ -9,23 +9,8 @@
     
     div.body
     ui-debio-card.table(
-      width="100%"
+      width="1087px"
     )
-      div.bodyHeader
-        v-row
-          v-col(cols="9")
-            v-row
-              span.topHead Recen Orders
-            v-row
-              span.botomHead Quick Actions to view your recent orders
-          v-col(cols="3")
-            Button.btnHead(
-              :width="'75px'"
-              :height="'25px'"
-              outlined
-              :color="'#5640A5'"
-              @click="goToOrderHistory"
-            ) View All
       div.bodyContent
         DataTable.content(
           :headers="headers"
@@ -54,26 +39,7 @@
           template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
 
           template(v-slot:[`item.actions`]="{item}")
-            div
-              v-row
-                v-col
-                  div
-                    Button.btnDetail(
-                      :color="'#C400A5'"
-
-                      dark
-                      :width="'80px'"
-                      :height="'25'"
-                    ) Details
-                v-col
-                  div
-                    Button.btnInstruction(
-                      :color="'#C400A5'"
-
-                      dark
-                      :width="'80px'"
-                      :height="'25'"
-                    ) Instruction
+            
 
 </template>
 
