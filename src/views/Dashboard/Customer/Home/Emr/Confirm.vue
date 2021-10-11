@@ -24,14 +24,33 @@
             ui-debio-icon.emr-confirm__file-icon(:icon="fileTextIcon" size="44" stroke)
             .emr-confirm__file-name {{ payload.file.name }}
 
-      ui-debio-input(v-model="password" @isError="handleError" variant="small" :rules="computePasswordRules" placeholder="Password" :type="inputType" outlined block).emr-confirm__password You are going to upload a file. Please enter your password to encrypt the file.
-        ui-debio-icon(slot="icon-append" :icon="computeIcon" size="20" :color="computeColor" stroke role="button" @click="changeInputType()")
+      ui-debio-input.emr-confirm__password(
+        v-model="password"
+        :error="error"
+        :rules="$options.rules.password"
+        :type="inputType"
+        variant="small"
+        placeholder="Password"
+        outlined
+        block
+        @isError="handleError"
+      ) You are going to upload a file. Please enter your password to encrypt the file.
+        ui-debio-icon(
+          slot="icon-append"
+          :icon="computeIcon"
+          size="20"
+          :color="computeColor"
+          stroke
+          role="button"
+          @click="changeInputType()"
+        )
 </template>
 
 <script>
 import { eyeOffIcon, eyeIcon, fileTextIcon, checkCircleIcon } from "@/common/icons"
 import { validateForms } from "@/common/lib/validate"
 import Button from "@/common/components/Button"
+import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrConfirm",
@@ -45,6 +64,8 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
+
     inputType: "password",
     password: "",
     eyeOffIcon,
@@ -60,12 +81,6 @@ export default {
 
     computeColor() {
       return this.inputType === "password" ? "#757274" : "#5640a5"
-    },
-
-    computePasswordRules() {
-      return [
-        val => (val && val.length >= 8) || "Password min 8 character!"
-      ]
     }
   },
 
@@ -80,6 +95,10 @@ export default {
     password(password) {
       if (this.computeError) this.$emit("confirmFulfilled", password)
     }
+  },
+
+  rules: {
+    password: [ val => (val && val.length >= 8) || errorMessage.PASSWORD(8) ]
   },
 
   methods: {

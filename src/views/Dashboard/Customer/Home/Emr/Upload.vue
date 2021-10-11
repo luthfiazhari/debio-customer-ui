@@ -3,13 +3,14 @@
     .emr-upload
       ui-debio-dropdown(
         :value="document.category"
-        :rules="computeCategoryRules"
+        :rules="$options.rules.document.category"
+        :items="categories"
+        :error="error"
         variant="small"
         label="Select Category"
         return-object
         placeholder="Select Category"
         close-on-select
-        :items="categories"
         item-text="name"
         item-value="name"
         @isError="handleError"
@@ -20,7 +21,8 @@
         template(v-slot:item="{ item }")
           span {{ item.icon }} {{ item.name }}
       ui-debio-input(
-        :rules="computeDocumentRules"
+        :error="error"
+        :rules="$options.rules.document.title"
         v-model="document.title"
         variant="small"
         label="Title"
@@ -31,7 +33,8 @@
         validate-on-blur
       )
       ui-debio-textarea(
-        :rules="computeTextAreaRules"
+        :rules="$options.rules.document.description"
+        :error="error"
         v-model="document.description"
         variant="small"
         label="Description"
@@ -42,7 +45,8 @@
       )
       ui-debio-file(
         v-model="document.file"
-        :rules="computeFileRules"
+        :error="error"
+        :rules="$options.rules.document.file"
         variant="small"
         accept=".pdf"
         label="File input"
@@ -52,12 +56,15 @@
 
 <script>
 import { validateForms } from "@/common/lib/validate"
+import errorMessage from "@/common/constants/error-messages"
 
 export default {
   name: "CustomerEmrUpload",
   mixins: [validateForms],
 
   data: () => ({
+    errorMessage,
+
     document: {
       title: "",
       description: "",
@@ -80,29 +87,15 @@ export default {
     ]
   }),
 
-  computed: {
-    computeDocumentRules() {
-      return [
-        val => !!val || "Document title required!"
-      ]
-    },
-
-    computeFileRules() {
-      return [
-        val => !!val || "File required!",
-        val => (val && val.size < 30000) || "Maximum file size 30MB!"
-      ]
-    },
-
-    computeCategoryRules() {
-      return [
-        val => !!val || "Category required!"
-      ]
-    },
-
-    computeTextAreaRules() {
-      return [
-        val => (val && val.length >= 20) || "Document description min 20 character!"
+  rules: {
+    document: {
+      title: [ val => !!val || errorMessage.REQUIRED ],
+      category: [ val => !!val || errorMessage.REQUIRED ],
+      description: [ val => !!val || errorMessage.REQUIRED ],
+      file: [
+        val => !!val || errorMessage.REQUIRED,
+        val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30),
+        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF")
       ]
     }
   },
