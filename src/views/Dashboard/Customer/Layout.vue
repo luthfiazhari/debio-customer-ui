@@ -88,6 +88,10 @@ export default {
 
     &__sidebar
       grid-area: sidebar
+
+      Button
+       font-weight: 500 !important
+       font-size: 13px
   
   .transition-slide-x
     &-enter-active,

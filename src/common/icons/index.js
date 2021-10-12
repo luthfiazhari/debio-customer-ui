@@ -28,6 +28,10 @@ import hospitalIcon from "./hospital"
 import checkCircleIcon from "./checkCircle"
 import lockIcon from "./lock"
 import trashIcon from "./trash"
+import gridIcon from "./grid"
+import boxIcon from "./box"
+import databaseIcon from "./database"
+import phoneIcon from "./phone"
 
 export {
   creditCardIcon,
@@ -59,5 +63,9 @@ export {
   hospitalIcon,
   checkCircleIcon,
   lockIcon,
-  trashIcon
+  trashIcon,
+  gridIcon,
+  boxIcon,
+  databaseIcon,
+  phoneIcon
 }
