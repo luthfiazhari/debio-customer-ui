@@ -165,7 +165,7 @@
                 :icon="phoneIcon"
                 size="16"
                 stroke
-                view-box="0 0 40 40"
+                view-box="0 -3 40 40"
                 :color="'#757274'"
               )
               span Customer Care
