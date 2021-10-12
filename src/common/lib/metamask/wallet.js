@@ -143,7 +143,7 @@ export async function getPrice(priceOrder) {
     decimalPlaces = 18
   }
 
-  let price = BigNumber(priceOrder).toString()
+  let price = BigNumber(priceOrder).toString() //eslint-disable-line
   let _decimals = parseInt(decimalPlaces)
   for (let i = 0; i < _decimals; i++) {
     price += "0"
