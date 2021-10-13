@@ -5,7 +5,7 @@
       subtitle="Here, you can request at-home medical testing so that you do not need to visit a physical facility. This includes Covid-19 testing and other diseases. All tests are anonymous-first."
     )
       template(slot="illustration")
-        ui-debio-icon(:icon="mytestIllustration" :size="cardBlock ? 250 : 180" view-box="0 0 182 130" fill)
+        ui-debio-icon(:icon="mytestIllustration" :size="cardBlock ? 275 : 265" view-box="10 0 256 190" fill)
     
     div.body
     ui-debio-card.table(
@@ -173,6 +173,9 @@ export default {
       .banner__subtitle
         max-width: 36.188rem !important
 
+      .banner__content-description
+        margin-left: 18rem !important
+
       .body
         margin-top: 25px
         display: grid
@@ -208,4 +211,6 @@ export default {
 
       .detailLab
         margin: -5px 0 0 0
+      .banner__card
+        background: linear-gradient(267.84deg, #D783FF 18.61%, #AF5EFF 55.16%, #A445D0 93.27%) !important
 </style>

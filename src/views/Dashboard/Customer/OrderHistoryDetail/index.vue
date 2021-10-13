@@ -34,14 +34,20 @@
                   div
                     ui-debio-card(
                       width="100%"
-                      with-icon
-                      tiny-card
-                      title="title"
-                      sub-title="sub title"
-                      :block="true"
+                      height="100%"
                     )
+                      div.box
+                        ui-debio-icon(
+                          :icon="microscopeIcon"
+                          :size="52"
+                          stroke
+                          color="linear-gradient(81.43deg, #6344D0 2.53%, #9D82FF 100%)"
+                          view-box="-5 0 55 55"
+                        )
+                      div content
                 div.botomRow
                   span.specimentNumber speciment number
+                  v-spacer
                   span.number 0131-1324-1323
 
             v-col
@@ -66,6 +72,13 @@
 import {
   microscopeIcon,
   weightLifterIcon,
+  fileSearchIcon,
+  hairIcon,
+  familyTreeIcon,
+  dnaIcon,
+  foodAppleIcon,
+  pillIcon,
+  virusIcon,
   registeredBanner, //"0 0 182 135" size 185
   receivedBanner, //"-20 0 300 135" size 300
   wetworkBanner, //"-20 0 300 150" size 295
@@ -79,6 +92,13 @@ export default {
   components: { Banner },
   data: () => ({
     microscopeIcon,
+    fileSearchIcon,
+    hairIcon,
+    familyTreeIcon,
+    dnaIcon,
+    foodAppleIcon,
+    pillIcon,
+    virusIcon,
     weightLifterIcon,
     registeredBanner,
     receivedBanner,
@@ -128,6 +148,10 @@ export default {
           this.viewBox = this.orderDetail[i].viewBox
         }
       }
+    },
+
+    iconSwitcher() {
+
     }
     //lempar banner gimana ? dan stepper belom
   }
