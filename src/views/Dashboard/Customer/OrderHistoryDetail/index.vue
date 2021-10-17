@@ -20,11 +20,12 @@
                       height="100%"
                     )
                       div.box
-                        ui-debio-icon(
+                        ui-debio-icon.box(
                           :icon="microscopeIcon"
                           :size="52"
                           stroke
-                          color="linear-gradient(81.43deg, #6344D0 2.53%, #9D82FF 100%)"
+                          :stroke-width="0"
+                          color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
                           view-box="-5 0 55 55"
                         )
                       div content
@@ -41,7 +42,8 @@
                           :icon="microscopeIcon"
                           :size="52"
                           stroke
-                          color="linear-gradient(81.43deg, #6344D0 2.53%, #9D82FF 100%)"
+                          :stroke-width="0"
+                          color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
                           view-box="-5 0 55 55"
                         )
                       div content

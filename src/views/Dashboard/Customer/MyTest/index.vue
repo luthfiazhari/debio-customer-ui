@@ -8,6 +8,7 @@
         ui-debio-icon(:icon="mytestIllustration" :size="cardBlock ? 275 : 265" view-box="10 0 256 190" fill)
     
     div.body
+      
     ui-debio-card.table(
       width="1087px"
     )
@@ -17,9 +18,14 @@
           :items="dummyItems"
           :sortBy="['timestamp']"
           :sort-by="[true]"
-          :disableSort="true"
         )
-          template(class="status" v-slot:[`item.title`]="{item}")
+          template(v-slot:top-left-slot)
+            div top left slot
+
+          template(v-slot:top-right-slot)
+            div.rightSide top right slot
+
+          template(class="titleSection" v-slot:[`item.title`]="{item}")
             div(class="detailLab d-flex align-center")
               v-img(
                 alt="dbio Logo"
@@ -28,15 +34,17 @@
                 src="@/assets/debio-logo.png"
                 transition="scale-transition"
                 width="42px"
-                height="42px"
               )
-              div(class="fluid")
-                div.textBox
+              div
+                div.titleStatus
                   span {{ item.title }}
-                div.subTextBox
+                div.statusDna
                   span {{ item.dna_sample_tracking_id}}
+          
+          //- template(v-slot: )
 
-          template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
+          template(v-slot:[`item.status`]="{item}")
+            span.statusOrder {{ item.status }}
 
           template(v-slot:[`item.actions`]="{item}")
             
@@ -48,7 +56,9 @@ import { mytestIllustration } from "@/common/icons"
 
 import Banner from "@/common/components/Banner.vue"
 import DataTable from "@/common/components/DataTable"
+import SearchBar from "@/common/components/DataTable/SearchBar"
 import Button from "@/common/components/Button"
+
 
 export default {
   name: "CustomerMyTest",
@@ -56,7 +66,8 @@ export default {
   components: {
     Banner,
     DataTable,
-    Button
+    Button,
+    SearchBar
   },
 
   data: () => ({
@@ -168,7 +179,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap')
+
   .customer-myTest
+    font-family: 'Open Sans', sans-serif !important
     &::v-deep
       .banner__subtitle
         max-width: 36.188rem !important
@@ -182,35 +196,51 @@ export default {
         width: 100%
         grid-template-columns: 1fr 1fr
         gap: 20px
+
       .content
         margin: 15px 5px 5px -5px
+
       .bodyHeader
         margin-left: 15px
+
       .topHead
         font-size: 15px
+
       .botomHead
         font-size: 10px
+
       .btnHead
         font-size: 10px
         margin-left: 25px
         margin-top: -15px
+        
       .iconTable
         margin-left: 8px
         margin-top: -2px
-      .status
+
+      .statusOrder
         color: #48A868 !important
-      .textBox
-        margin-top: 14px
-      .subTextBox
-        margin-top: -40px
+        
+      .titleStatus
+        margin: 0 0 0 0
+
+      .statusDna
+        margin: 0 0 0 0 
+        color: #8C8C8C !important
 
       .btnDetail
         margin: 15px 0 0 0
+
       .btnInstruction
        margin: 0 0 0 15px
 
       .detailLab
-        margin: -5px 0 0 0
+        margin: 10px 0 10px 0
+
       .banner__card
         background: linear-gradient(267.84deg, #D783FF 18.61%, #AF5EFF 55.16%, #A445D0 93.27%) !important
+
+      .rightSide
+        position: Absolute
+        right: 0
 </style>
