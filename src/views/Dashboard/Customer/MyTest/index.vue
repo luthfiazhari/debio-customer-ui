@@ -58,7 +58,8 @@ import Banner from "@/common/components/Banner.vue"
 import DataTable from "@/common/components/DataTable"
 import SearchBar from "@/common/components/DataTable/SearchBar"
 import Button from "@/common/components/Button"
-
+import { mapState } from "vuex"
+import { searchOrder } from "@/common/lib/polkadot-provider/query/orders"
 
 export default {
   name: "CustomerMyTest",
@@ -68,6 +69,15 @@ export default {
     DataTable,
     Button,
     SearchBar
+  },
+
+  computed: {
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      lastEventData: (state) => state.substrate.lastEventData
+    })
   },
 
   data: () => ({
@@ -167,6 +177,42 @@ export default {
       }
     ]
   }),
+
+  watch: {
+    lastEventData() {
+      if (this.lastEventData != null) {
+        const dataEvent = JSON.parse(this.lastEventData.data.toString())
+        if (this.lastEventData.section == "orders") {
+          if (dataEvent[0].customer_id == this.wallet.address) {
+            this.onSearchInput()
+          }
+        }
+      }
+    },
+
+    async address() {
+      await this.onSearchInput()
+    }
+  },
+
+  methods: {
+    checkLastOrder() {
+      const status = localStorage.getLocalStorageByName("lastOrderStatus")
+
+      this.isProcessed = status ? status : null
+    },
+
+    async onSearchInput(val) {
+      this.checkLastOrder()
+
+      const results = await searchOrder(val)
+      this.orderHistory = results.map(result => ({
+        ...result._source,
+        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
+        timestamp: parseInt(result._source.created_at)
+      }))
+    }
+  },
 
   mounted() {
     window.addEventListener("resize", () => {

@@ -5,7 +5,7 @@
         width="100%"
         height="1000px"
       )
-        div.header
+        div.headerSection.align-center
           span(align="center") HEADER
         div.bodyContent
           v-row
@@ -15,20 +15,16 @@
                   div.titleHead
                     span Lab details
                   div
-                    ui-debio-card(
-                      width="100%"
-                      height="100%"
-                    )
-                      div.box
-                        ui-debio-icon.box(
+                      div.bodyWraper.box
+                        ui-debio-icon.dataIcon.box(
                           :icon="microscopeIcon"
-                          :size="52"
+                          :size="92"
                           stroke
                           :stroke-width="0"
                           color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
                           view-box="-5 0 55 55"
                         )
-                      div content
+                      div.dataContent content
                 div.middleRow
                   div
                     span Products details
@@ -167,8 +163,9 @@ export default {
     &::v-deep
       .banner__subtitle
         max-width: 36.188rem !important
-    .header
+    .headerSection
       align: center
+      margin: 25px 0 50px 0
     .box
       border: solid 0.5px #E4E4E4
     .bodyContent
@@ -186,9 +183,16 @@ export default {
           align: flex-end
 
     .rightSection
-
+    .bodyWraper
+      padding: 10px
+      .dataIcon
+        padding: 5px
+      .dataContent
+        margin: 0 0 0 5px
     .titleHead
       margin: 0 0 0 17px
+      font-weight: 600
+
     .imageBanner
       width: 481px
       height:184px

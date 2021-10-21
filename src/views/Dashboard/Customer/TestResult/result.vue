@@ -2,7 +2,7 @@
   div
     v-container
       ui-debio-card(width="100%")
-        v-row
+        v-row.resultBody
           v-col(cols="12" md="9")
             ui-debio-card(width="100%" height="100%" class="mt-2")
               template
@@ -17,28 +17,30 @@
                     type="application/pdf"
                     v-if="isDataPdf"
                     scrolling="auto"
-                    height="1000px"
+                    height="500px"
                     width="100%"
                   )
                   //- span(v-else) {{reportResult}}
                   div
-                    span {{dummyResult.title}}
+                    span {{dummyResult.title}} 
+                    br
                   div
                     span {{dummyResult.subTitle}}
                   div
                     span {{dummyResult.content}}
           v-col(cols="12" md="3")
             //- div(class="mb-2")
-            div(v-for="(file, index) in files" :key="file.name" class="mt-2")
+            div.buttonSection(v-for="(file, index) in files" :key="file.name")
               ui-debio-card(
                 :title="file.fileTitle"
                 :sub-title="file.fileSubTitle"
                 tiny-card
                 with-icon
+                @click="actionDownload(file.fileType)"
               )
                 ui-debio-icon(
                   slot="icon"
-                  size="30"
+                  size="33"
                   :icon="downloadIcon"
                   stroke
                   color="#c400a5"
@@ -63,9 +65,10 @@
               with-icon
               title="Rating"
               sub-title="Help us improve your test experience by rating this service"
+              @click="actionRating"
               )
                 ui-debio-icon(
-                  size="30"
+                  size="33"
                   slot="icon"
                   :icon="starIcon"
                   stroke
@@ -108,12 +111,29 @@ export default {
       subTitle: "GSI Lab, 5 July 2021",
       content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
-  })
+  }),
+
+  methods: {
+    actionDownload(type) {
+
+      console.log(type)
+    },
+
+    actionRating() {
+      console.log("rating")
+    }
+  }
 
 
 }
 </script>
 
-<style lang="scss">
+<style lang="sass">
+  .resultBody
+    margin: 25px 0 0 0
+  .buttonSection
+    margin: 8px 0 45px 0
+  .v-card__text
+    height: 500px
 
 </style>
