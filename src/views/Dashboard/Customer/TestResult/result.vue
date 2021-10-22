@@ -74,22 +74,47 @@
                   stroke
                   color="#c400a5"
                 )
+      //- Modal(
+      //-   :show="modalStatus"
+      //-   title="Please tell us about your experience!"
+      
+      //- )
+      ui-debio-modal(
+        :show="showModalRating"
+        :cta-action="submitRating"
+        title="Please tell us about your experience!"
+        cta-title="Submit"
+        @onClose="showModalRating = false"
+      )
+        template
+
+      ui-debio-modal(
+        :show="showModal"
+        :icon="checkCircleIcon"
+        :cta-action="closeModal"
+        :title="modalTitle"
+        cta-title="OK"
+        @onClose="showModal = false"
+      )
 
 </template>
 
 <script>
-import { downloadIcon, debioIcon, creditCardIcon, starIcon } from "@/common/icons"
-
+import { downloadIcon, debioIcon, creditCardIcon, starIcon, checkCircleIcon } from "@/common/icons"
+import Modal from "@/common/components/Modal"
 export default {
   name: "test-result",
-  components: {},
+  components: { Modal },
   data: () => ({
     downloadIcon,
     debioIcon,
     creditCardIcon,
     starIcon,
+    checkCircleIcon,
     resultLoading: false,
     reportResult: "",
+    showModal: false,
+    showModalRating: false,
     files: [
       {
         fileType: "report",
@@ -121,6 +146,23 @@ export default {
 
     actionRating() {
       console.log("rating")
+      this.showModalRating = true
+    },
+
+    closeModal(){
+      this.$emit("showModal", false)
+      this.showModal = false
+    },
+
+    submitRating() {
+      this.showModalRating = false
+      this.showModal = true
+    }
+  },
+
+  computed: {
+    modalTitle() {
+      return `Thank you! ${"\n"} Your feedback has been sent`
     }
   }
 

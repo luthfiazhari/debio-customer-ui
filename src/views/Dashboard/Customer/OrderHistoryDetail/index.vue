@@ -24,7 +24,10 @@
                           color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
                           view-box="-5 0 55 55"
                         )
-                      div.dataContent content
+                        div.dataContent
+                          span header
+                          span body
+                          span foot
                 div.middleRow
                   div
                     span Products details

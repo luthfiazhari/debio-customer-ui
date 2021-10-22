@@ -90,7 +90,7 @@ export default {
     computeFileRules() {
       return [
         val => !!val || "File required!",
-        val => (val && val.size < 30000) || "Maximum file size 30MB!"
+        val => (val && val.size < 30000000) || "Maximum file size 30MB!"
       ]
     },
 
