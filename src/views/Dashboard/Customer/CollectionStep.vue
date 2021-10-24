@@ -1,41 +1,5 @@
 <template lang="pug">
-  div
-    ui-debio-card(width="100%")
-      div.headerTitle
-        span BUCCAL SWAB COLLECTION PROCESS
-
-      div.firstBody
-        span Tools to be prepared:
-        div.bodyContent
-          v-row
-            v-col.swabCard(v-for="(item, i) in swabDetail" :key="i")
-              div 
-                div
-                  ui-debio-icon(:icon="swabIcon(item.name)" size="90" fill view-box="0 0 100 100")
-                div
-                  span {{ item.detail }}
-
-      div.secondBody
-        span DNA Sample Collection Steps:
-        div.bodyContent
-          v-row.dnaBox(v-for="(item, i) in dnaCollectionDetail" :key="i")
-            div
-              v-row.dnaCard
-                v-col
-                  div.leftSide
-                    ui-debio-icon(:icon="dnaIcon(item.name)" size="90" fill view-box="0 0 100 100")
-                v-col
-                  div.rightSide
-                    span {{ item.detail }}
-
-      div
-        Button.download(
-          outlined
-          :color="'#C400A5'"
-          :width="'479px'"
-        ) Download as PDF
-
-
+  
 </template>
 
 <script>

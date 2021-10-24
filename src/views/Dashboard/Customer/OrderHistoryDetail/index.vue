@@ -5,51 +5,50 @@
         width="100%"
         height="1000px"
       )
-        div.headerSection.align-center
-          span(align="center") HEADER
+        div.headerSection
+          span Test Summary
         div.bodyContent
           v-row
             v-col
-              div.leftSection.box
-                div.topRow
-                  div.titleHead
-                    span Lab details
-                  div
-                      div.bodyWraper.box
-                        ui-debio-icon.dataIcon.box(
-                          :icon="microscopeIcon"
-                          :size="92"
-                          stroke
-                          :stroke-width="0"
-                          color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
-                          view-box="-5 0 55 55"
-                        )
-                        div.dataContent
-                          span header
-                          span body
-                          span foot
-                div.middleRow
-                  div
-                    span Products details
-                  div
-                    ui-debio-card(
-                      width="100%"
-                      height="100%"
-                    )
-                      div.box
-                        ui-debio-icon(
-                          :icon="microscopeIcon"
-                          :size="52"
-                          stroke
-                          :stroke-width="0"
-                          color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
-                          view-box="-5 0 55 55"
-                        )
-                      div content
+              div.leftSection.box.fillColor
+                div.topRow.fillColor_II
+                  div.topHead
+                    span Lab Details
+                  div.box
+                    div.topBody
+                      ui-debio-icon.dataIcon.box(
+                        :icon="microscopeIcon"
+                        :size="92"
+                        stroke
+                        :stroke-width="0"
+                        color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
+                        view-box="-5 0 55 55"
+                      )
+                      div.topContentWraper
+                        span title
+                        span Details
+
+                div.middleRow.fillColor_II
+                  div.topHead
+                    span Product Details
+                  div.box
+                    div.topBody
+                      ui-debio-icon.dataIcon.box(
+                        :icon="microscopeIcon"
+                        :size="92"
+                        stroke
+                        :stroke-width="0"
+                        color="linear-gradient(180deg, #716CFF 0%, #B267FF 100%)"
+                        view-box="-5 0 55 55"
+                      )
+                      div.topContentWraper
+                        span title
+                        span Details
                 div.botomRow
-                  span.specimentNumber speciment number
+                  span Specimen Number
                   v-spacer
-                  span.number 0131-1324-1323
+                  span H8QT-L550-8X92
+
 
             v-col
               div.rightSection.box
@@ -64,6 +63,7 @@
                   span.status Registered
                   span.detail Details
                 div.statusStepper
+                  div stepper
 
 
 
@@ -136,11 +136,11 @@ export default {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
-    this.bannerSwitcher()
+    this.checkOrderDetail()
   },
 
   methods: {
-    bannerSwitcher() {
+    checkOrderDetail() {
       for (let i = 0; i < this.orderDetail.length; i++) {
         if (this.orderDetail[i].status == this.DnaSampleStatus) {
           this.dnaStatus = this.orderDetail[i].name
@@ -153,8 +153,11 @@ export default {
 
     iconSwitcher() {
 
-    }
+    },
     //lempar banner gimana ? dan stepper belom
+    bannerSwitcher() {
+
+    }
   }
 
 }
@@ -167,34 +170,53 @@ export default {
       .banner__subtitle
         max-width: 36.188rem !important
     .headerSection
-      align: center
+      text-align: center
       margin: 25px 0 50px 0
+      font-weight: 600
+      font-size: 24px
     .box
       border: solid 0.5px #E4E4E4
+
+    .fillColor
+      height: 456px
+    .fillColor_II
+      height: 150px
     .bodyContent
       margin: 5px 0 0 0
     .leftSection
       .topRow
-        margin: 5px 0 10px 0
+        margin: 25px 15px 15px 15px
       .middleRow
-        margin: 5px 0 10px 0
+        margin: 25px 15px 15px 15px
       .botomRow
         display: flex
-        margin: 5px 0 10px 0
-        .specimentNumber
-        .number
-          align: flex-end
+        margin: 21px 15px 15px 15px
+        font-weight: 600
+        font-size: 14px
+        line-height: 20px
 
     .rightSection
     .bodyWraper
       padding: 10px
-      .dataIcon
-        padding: 5px
+
+    .dataIcon
+      padding: 10px
+      margin: 10px
+
       .dataContent
         margin: 0 0 0 5px
-    .titleHead
-      margin: 0 0 0 17px
+    .topHead
+      margin: 0 0 10px 0
       font-weight: 600
+      font-size: 20px
+      line-height: 23px
+    .topBody
+      display: flex
+    .topContentWraper
+      display: flex
+      flex-direction: column
+      margin: 5px 0 5px 5px
+      justify-content: space-evenly
 
     .imageBanner
       width: 481px
