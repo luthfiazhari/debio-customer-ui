@@ -60,6 +60,7 @@ import SearchBar from "@/common/components/DataTable/SearchBar"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import { searchOrder } from "@/common/lib/polkadot-provider/query/orders"
+import localStorage from "@/common/lib/local-storage"
 
 export default {
   name: "CustomerMyTest",
@@ -71,18 +72,18 @@ export default {
     SearchBar
   },
 
-  computed: {
-    ...mapState({
-      walletBalance: (state) => state.substrate.walletBalance,
-      api: (state) => state.substrate.api,
-      wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData
-    })
-  },
-
   data: () => ({
     mytestIllustration,
     cardBlock: false,
+    orders: [],
+    page: 1,
+    pageSize: 5,
+    orderHistory: [],
+    address: "",
+    password: "",
+    search: "",
+    isProcessed: "",
+
     headers: [
       { text: "Service Name", value: "title" },
       { text: "Lab Name", value: "labName" },
@@ -211,14 +212,33 @@ export default {
         created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
         timestamp: parseInt(result._source.created_at)
       }))
+    },
+
+    loadData() {
+      console.log(this.walletBalance, "balance")
+      console.log(this.wallet, "wallet")
+      console.log(this.lastEventData, "last event")
+      console.log(this.api, "api")
     }
+  },
+
+  computed: {
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      lastEventData: (state) => state.substrate.lastEventData
+    })
   },
 
   mounted() {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
-    })
+    }),
+
+    this.address = this.wallet.address
+    this.loadData()
   }
 
 }

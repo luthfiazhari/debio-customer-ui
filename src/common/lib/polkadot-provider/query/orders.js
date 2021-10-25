@@ -2,7 +2,9 @@ import { queryServicesById } from "./services"
 import { queryLabsById } from "./labs"
 import { queryDnaSamples } from "./genetic-testing"
 import { ethAddressByAccountId } from "./user-profile"
+import localStorage from "@/common/lib/local-storage"
 import axios from "axios"
+
 
 export async function getOrdersDetail(api, orderId){
   let orderDetail = await getOrdersData(api, orderId)
@@ -102,7 +104,7 @@ export async function lastOrderByCustomer(api, address) {
 }
 
 export async function searchOrder(searchQuery) {
-  const { data: { data } } = await axios.get(`${process.env.VUE_APP_DEV_DEGENICS_BACKEND_URL}/orders/${localStorage.getAddress()}`, {
+  const { data: { data } } = await axios.get(`${process.env.VUE_APP_DEV_DEBIO_BACKEND_URL}/orders/${localStorage.getAddress()}`, {
     params: { size: 1000, page: 1, keyword: searchQuery || "" }
   })
 
