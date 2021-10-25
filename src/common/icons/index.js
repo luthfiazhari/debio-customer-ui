@@ -21,6 +21,9 @@ import closeIcon from "./close"
 import starIcon from "./star"
 import copyIcon from "./copy"
 import noteIllustration from "./noteIllustration"
+import researchIllustration from "./researchIllustration"
+import particleIllustration from "./particleIllustration"
+import doctorsIllustration from "./doctorsIllustration"
 import customerIcon from "./customer"
 import fileTextIcon from "./fileText"
 import labIcon from "./lab"
@@ -58,6 +61,9 @@ export {
   logoutIcon,
   copyIcon,
   noteIllustration,
+  researchIllustration,
+  particleIllustration,
+  doctorsIllustration,
   defaultIcon,
   customerIcon,
   labIcon,
