@@ -2,6 +2,7 @@ import Vue from "vue"
 
 // Components
 Vue.component("ui-debio-card", () => import("@/common/components/Card"))
+Vue.component("ui-debio-banner", () => import("@/common/components/Banner"))
 Vue.component("ui-debio-avatar", () => import("@/common/components/Avatar"))
 Vue.component("ui-debio-banner", () => import("@/common/components/Banner"))
 Vue.component("ui-debio-rating", () => import("@/common/components/Rating"))

@@ -27,6 +27,7 @@
 import NavigationDrawer from "@/common/components/NavigationDrawer"
 import Navbar from "@/common/components/Navbar.vue"
 import Button from "@/common/components/Button"
+import { gridIcon, boxIcon, databaseIcon, fileTextIcon, creditCardIcon } from "@/common/icons"
 
 export default {
   name: "MainPage",
@@ -34,11 +35,11 @@ export default {
 
   data: () => ({
     navs: [
-      { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", img: "@/assets/grid.png" },
-      { text: "My Test", disabled: false, active: false, route: "customer-test", img: "@/assets/box.png" },
-      { text: "My EMR", disabled: false, active: false, route: "customer-emr", img: "@/assets/file-text.png" },
-      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", img: "@/assets/credit-card.png" },
-      { text: "Payment History", disabled: false, active: false, route: "customer-order-history", img: "@/assets/credit-card.png" }
+      { text: "Dashboard", disabled: false, active: false, route: "customer-dashboard", icon: gridIcon },
+      { text: "My Test", disabled: false, active: false, route: "customer-test", icon: boxIcon },
+      { text: "My EMR", disabled: false, active: false, route: "customer-emr", icon: fileTextIcon },
+      { text: "Data Bounty", disabled: false, active: false, route: "customer-data-bounty", icon: databaseIcon },
+      { text: "Payment History", disabled: false, active: false, route: "customer-payment-history", icon: creditCardIcon }
     ]
   }),
 

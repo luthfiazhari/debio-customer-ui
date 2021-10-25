@@ -18,10 +18,16 @@ const customerRoutes = [{
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr")
     },  
     {
-      path: "create",
+      path: "emr/create",
       name: "customer-emr-create",
       meta: { pageHeader: "Emr Create", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Create")
+    },
+    {
+      path: "emr/details/:id",
+      name: "customer-emr-details",
+      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/Emr/Details")
     },
     {
       path: "customer-test",
