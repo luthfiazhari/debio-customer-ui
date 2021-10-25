@@ -59,7 +59,13 @@ import DataTable from "@/common/components/DataTable"
 import SearchBar from "@/common/components/DataTable/SearchBar"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
-import { searchOrder } from "@/common/lib/polkadot-provider/query/orders"
+import {
+  searchOrder,
+  ordersByCustomer
+  // getOrdersData
+} from "@/common/lib/polkadot-provider/query/orders"
+// import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
+// import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
 
 export default {
@@ -79,17 +85,17 @@ export default {
     page: 1,
     pageSize: 5,
     orderHistory: [],
-    address: "",
+    // address: "",
     password: "",
     search: "",
     isProcessed: "",
 
     headers: [
-      { text: "Service Name", value: "title" },
-      { text: "Lab Name", value: "labName" },
-      { text: "Order Date", value: "orderDate" },
-      { text: "Last Update", value: "updated_at" },
-      { text: "Test Status", value: "status" },
+      { text: "Service Name", value: "title", sortable: true },
+      { text: "Lab Name", value: "labName", sortable: true },
+      { text: "Order Date", value: "orderDate", sortable: true },
+      { text: "Last Update", value: "updated_at", sortable: true },
+      { text: "Test Status", value: "status", sortable: true },
       {
         text: "Actions",
         value: "actions",
@@ -219,6 +225,18 @@ export default {
       console.log(this.wallet, "wallet")
       console.log(this.lastEventData, "last event")
       console.log(this.api, "api")
+      console.log(this.userAddress, "user address")
+    },
+
+    async getOrderHistory() {
+      try {
+        this.orderHistory = []
+        const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, address)
+        console.log(listOrderId, "<==== list order id")
+      } catch(error) {
+        console.log(error)
+      }
     }
   },
 
@@ -228,7 +246,10 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       lastEventData: (state) => state.substrate.lastEventData
-    })
+    }),
+    userAddress() {
+      return JSON.parse(localStorage.getKeystore()) ["address"]
+    }
   },
 
   mounted() {
@@ -239,6 +260,7 @@ export default {
 
     this.address = this.wallet.address
     this.loadData()
+    this.getOrderHistory()
   }
 
 }
