@@ -94,8 +94,8 @@ export default {
       description: [ val => !!val || errorMessage.REQUIRED ],
       file: [
         val => !!val || errorMessage.REQUIRED,
-        val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30),
-        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF")
+        val => (val && val.size < 30000000) || errorMessage.FILE_SIZE(30), // eslint-disable-line
+        val => (val && val.type === "application/pdf") || errorMessage.FILE_FORMAT("PDF") // eslint-disable-line
       ]
     }
   },
