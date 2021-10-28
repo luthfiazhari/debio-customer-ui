@@ -98,7 +98,7 @@ export default {
   },
 
   rules: {
-    password: [ val => (val && val.length >= 8) || errorMessage.PASSWORD(8) ] // eslint-disable-line
+    password: [ val => (val && val.length >= 8) || errorMessage.PASSWORD(8) ]
   },
 
   methods: {
