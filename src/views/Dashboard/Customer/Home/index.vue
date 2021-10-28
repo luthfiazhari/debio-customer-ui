@@ -56,7 +56,7 @@
             :sortBy="['timestamp']"
             :sort-by="[true]"
             :disableSort="true"
-            :showFooter="false"
+            :showFooter="true"
 
           )
             template(class="status" v-slot:[`item.title`]="{item}")
@@ -111,11 +111,10 @@
         div.bodyContent
           DataTable.content(
             :headers="headers"
-            :items="testHistory"
+            :items="dummyItems"
             :sortBy="['timestamp']"
             :sort-by="[true]"
             :disableSort="true"
-            :showFooter="false"
           )
 
             template(class="status" v-slot:[`item.title`]="{item}")
@@ -153,7 +152,6 @@ import Banner from "@/common/components/Banner.vue"
 import DataTable from "@/common/components/DataTable"
 import dataTesting from "./MyTest/dataTesting.json"
 
-
 export default {
   name: "CustomerHome",
 
@@ -170,7 +168,7 @@ export default {
 
     headers: [
       { text: "Service Name", value: "service_info.name",sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
+      { text: "Lab Name", value: "lab_info.mame", sortable: true },
       { text: "Date", value: "created_at", sortable: true },
       { text: "Status", value: "status", sortable: true },
       {
@@ -192,7 +190,6 @@ export default {
 
   async created() {
     await this.getDataOrder()
-    await this.getDataTestHistory()
     await this.checkOrderLenght()
   },
 
@@ -205,28 +202,18 @@ export default {
         created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
         timestamp: parseInt(result._source.created_at)
       }))
-      console.log(this.orderHistory.length, "length")
     },
 
     async getDataTestHistory() {
       // beda nya apa sama data history, kalo beda dari status ya nanti di filter
-      this.testHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        timestamp: parseInt(result._source.created_at)
-      }))
-      console.log(this.testHistory.length, "length")
     },
 
     goToOrderHistory() {
       console.log("to order history")
-      this.$router.push({ name: "customer-test" })
+      // this.$router.push({ name: "" })
     },
     goToDetail() {
-      console.log("go to detail order history")
-      // this.$router.push({ name: "", params: this.orderHistory })
+      console.log("go to detail")
     },
 
     async checkOrderLenght() {
@@ -236,27 +223,6 @@ export default {
       }
       this.titleWording = "Quick Actions to view your recent orders"
     }
-
-    // setStatusColor(status) {
-    //   let colors = Object.freeze({
-    //     Registered:,
-    //     REGISTERED:,
-    //     Arrived:,
-    //     ARRIVED:,
-    //     REJECTED:,
-    //     SUCCESS:,
-    //     FAILEDL,
-    //     QUALITYCONTROLLED
-    //     Rejected:,
-    //     Success:,
-    //     Failed:,
-    //     QualityControlled:,
-    //     GenotypedSequenced:,
-    //     Reviewed:,
-    //     Computed:,
-    //     ResultReady:
-    //   })
-    // }
   }
 }
 </script>
@@ -275,7 +241,7 @@ export default {
         gap: 20px
 
       .content
-        margin: 0 5px 5px -5px
+        margin: 15px 5px 5px -5px
 
       .bodyHeader
         margin-left: 15px
