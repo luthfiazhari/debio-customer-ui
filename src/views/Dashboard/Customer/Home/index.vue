@@ -1,6 +1,6 @@
 <template lang="pug">
 .customer-home
-  Banner(
+  ui-debio-banner(
     title="Welcome to Debio!"
     subtitle="The Privacy-First Platform for Personal Biomedical Testing"
   )

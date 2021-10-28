@@ -1,6 +1,6 @@
 <template lang="pug">
   .customer-test
-    Banner(
+    ui-debio-banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
     )
@@ -74,7 +74,6 @@
 
 <script>
 import { layersIcon, noteIllustration } from "@/common/icons"
-import Banner from "@/common/components/Banner.vue"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
@@ -88,6 +87,7 @@ import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
 import dataTesting from "./dataTesting.json"
+import Banner from "@/common/components/Banner.vue"
 
 
 export default {
