@@ -37,24 +37,27 @@
           v-row
             v-col(cols="9")
               v-row
-                span.topHead Recen Orders
+                span.topHead Recent Orders
               v-row
-                span.botomHead Quick Actions to view your recent orders
+                span.botomHead {{ titleWording }}
             v-col(cols="3")
               Button.btnHead(
                 :width="'75px'"
                 :height="'25px'"
                 outlined
                 :color="'#5640A5'"
+                dark
                 @click="goToOrderHistory"
               ) View All
         div.bodyContent
           DataTable.content(
             :headers="headers"
-            :items="dummyItems"
+            :items="orderHistory"
             :sortBy="['timestamp']"
             :sort-by="[true]"
             :disableSort="true"
+            :showFooter="true"
+
           )
             template(class="status" v-slot:[`item.title`]="{item}")
               div(class="d-flex align-center")
@@ -68,9 +71,9 @@
                   height="35px"
                 )
                 div(class="fluid")
-                  div.textBox
+                  div
                     span {{ item.title }}
-                  div.subTextBox
+                  div
                     span {{ item.dna_sample_tracking_id}}
 
             template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
@@ -93,9 +96,9 @@
           v-row
             v-col(cols="9")
               v-row
-                span.topHead Recen Test
+                span.topHead Recent Test
               v-row
-                span.botomHead Quick Actions to view your recent orders
+                span.botomHead {{ titleWording }}
             v-col(cols="3")
               Button.btnHead(
                 :width="'75px'"
@@ -104,6 +107,7 @@
                 :color="'#5640A5'"
                 @click="goToOrderHistory"
               ) View All
+
         div.bodyContent
           DataTable.content(
             :headers="headers"
@@ -125,9 +129,9 @@
                   height="35px"
                 )
                 div(class="fluid")
-                  div.textBox
+                  div
                     span {{ item.title }}
-                  div.subTextBox
+                  div
                     span {{ item.dna_sample_tracking_id}}
 
 
@@ -142,82 +146,37 @@
 </template>
 
 <script>
-import { creditCardIcon, layersIcon, labIllustration } from "@/common/icons"
+import { creditCardIcon, layersIcon, labIllustration, eyeIcon } from "@/common/icons"
 
 import Banner from "@/common/components/Banner.vue"
+import DataTable from "@/common/components/DataTable"
+import dataTesting from "./MyTest/dataTesting.json"
 
 export default {
   name: "CustomerHome",
 
-  components: {Banner },
+  components: {Banner, DataTable },
   data: () => ({
     creditCardIcon,
     layersIcon,
     labIllustration,
+    eyeIcon,
     cardBlock: false,
+    orderHistory: [],
+    testHistory: [],
+    titleWording: "",
+
     headers: [
-      { text: "Service Name", value: "title" },
-      { text: "Lab Name", value: "labName" },
-      { text: "Date", value: "orderDate" },
-      { text: "Status", value: "status" },
+      { text: "Service Name", value: "service_info.name",sortable: true },
+      { text: "Lab Name", value: "lab_info.mame", sortable: true },
+      { text: "Date", value: "created_at", sortable: true },
+      { text: "Status", value: "status", sortable: true },
       {
         text: "Actions",
         value: "actions",
         sortable: false,
         align: "center",
         width: "5%"
-      }
-    ],
-    dummyItems: [
-      {
-        dna_sample_tracking_id: "AYEY6073POOH",
-        icon: "mdi-dna",
-        labName: "GSI Lab",
-        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
-        orderDate: "20 Jan 2021",
-        status: "Fulfilled",
-        timestamp: "1631849952000",
-        title: "Covid-19 Testing"
-      },
-      {
-        dna_sample_tracking_id: "073PAYEYH6OO",
-        icon: "mdi-dna",
-        labName: "Nebula Lab",
-        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
-        orderDate: "20 Jan 2021",
-        status: "Paid",
-        timestamp: "1631849952000",
-        title: "Whole Genome Sequencing"
-      },
-      {
-        dna_sample_tracking_id: "073PY6OHOAYE",
-        icon: "mdi-dna",
-        labName: "Prodia",
-        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
-        orderDate: "20 Jan 2021",
-        status: "Unpaid",
-        timestamp: "1631849952000",
-        title: "Whole Exome Sequencing"
-      },
-      {
-        dna_sample_tracking_id: "6073POAHYEYO",
-        icon: "mdi-dna",
-        labName: "Speed Lab",
-        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
-        orderDate: "20 Jan 2021",
-        status: "Refunded",
-        timestamp: "1631849952000",
-        title: "Targeted Gene Panel Sequencing"
-      },
-      {
-        dna_sample_tracking_id: "EYO6073POHAY",
-        icon: "mdi-dna",
-        labName: "32andme",
-        number: "0x3943c10e33521319e4222843c33a939492978da07070c15815cc32703712604a",
-        orderDate: "20 Jan 2021",
-        status: "Canceled",
-        timestamp: "1631849952000",
-        title: "SNP Microarray"
       }
     ]
   }),
@@ -227,6 +186,43 @@ export default {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
+  },
+
+  async created() {
+    await this.getDataOrder()
+    await this.checkOrderLenght()
+  },
+
+  methods: {
+    async getDataOrder() {
+      this.orderHistory = dataTesting.data.map(result => ({
+        ...result._source,
+        id: result._id,
+        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
+        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
+        timestamp: parseInt(result._source.created_at)
+      }))
+    },
+
+    async getDataTestHistory() {
+      // beda nya apa sama data history, kalo beda dari status ya nanti di filter
+    },
+
+    goToOrderHistory() {
+      console.log("to order history")
+      // this.$router.push({ name: "" })
+    },
+    goToDetail() {
+      console.log("go to detail")
+    },
+
+    async checkOrderLenght() {
+      if (this.orderHistory.length == 0) {
+        this.titleWording = "You haven’t made any order."
+        return
+      }
+      this.titleWording = "Quick Actions to view your recent orders"
+    }
   }
 }
 </script>

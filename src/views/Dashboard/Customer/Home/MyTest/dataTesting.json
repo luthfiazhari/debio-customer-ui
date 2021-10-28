@@ -122,7 +122,7 @@
               ]
             }
           ],
-          "name": "SupplWhole Genome Sequencingements",
+          "name": "Whole Genome Sequencing",
           "expected_duration": {
             "duration": 7,
             "duration_type": "WorkingDays"

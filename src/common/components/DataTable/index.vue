@@ -17,6 +17,7 @@
       :page.sync="page"
       :class="additionalClass"
       hide-default-footer
+      :show-footer="showFooter"
       :custom-filter="_customFilter"
       :sort-by="sortBy"
       :sort-desc="sortDesc"
@@ -34,7 +35,7 @@
 
       //- <!-- Custom Footer -->
       template(v-slot:footer)
-        div(class="footer d-flex justify-space-between align-center flex-wrap")
+        div(v-if="showFooter" class="footer d-flex justify-space-between align-center flex-wrap")
           div(
             class="pagination-info"
           ) Showing
@@ -68,7 +69,8 @@ export default {
     expand: { type: Boolean},
     customFilter: {type: [String, Boolean], default: false},
     loadingText: {type: String, default: ""},
-    disableSort: {type: Boolean, default: false}
+    disableSort: {type: Boolean, default: false},
+    showFooter: {type: Boolean, default: true}
   },
   data: () => ({
     page: 1,

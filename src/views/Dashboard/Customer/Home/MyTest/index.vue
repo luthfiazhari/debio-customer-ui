@@ -109,7 +109,7 @@ export default {
     isReady: false,
     isRegistered: false,
     isProcessed: null,
-    // orderHistory: [],
+    orderHistory: [],
     headers: [
       { text: "Service Name", value: "service_info.name", sortable: true },
       { text: "Lab Name", value: "lab_info.name", sortable: true },
