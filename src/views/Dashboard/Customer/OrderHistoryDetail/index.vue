@@ -25,8 +25,8 @@
                         view-box="-5 0 55 55"
                       )
                       div.topContentWraper
-                        span title
-                        span Details
+                        span GSI Lab
+                        span Jl. Laboratory, Kuningan barat, Mampang. Jakarta
 
                 div.middleRow.fillColor_II
                   div.topHead
@@ -42,8 +42,8 @@
                         view-box="-5 0 55 55"
                       )
                       div.topContentWraper
-                        span title
-                        span Details
+                        span Exercise
+                        span This test will increase your workout program
                 div.botomRow
                   span Specimen Number
                   v-spacer
@@ -217,6 +217,7 @@ export default {
       flex-direction: column
       margin: 5px 0 5px 5px
       justify-content: space-evenly
+      font-size: 14px
 
     .imageBanner
       width: 481px
