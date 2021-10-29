@@ -4,6 +4,7 @@ const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
   beforeEnter: checkIsLoggedIn,
+  redirect: { name: "customer-dashboard" },
   children: [
     {
       path: "/",
