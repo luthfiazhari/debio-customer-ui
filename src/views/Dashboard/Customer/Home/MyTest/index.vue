@@ -3,6 +3,8 @@
     ui-debio-banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
+      with-decoration
+      gradient-color="tertiary"
     )
       template(slot="illustration")
         ui-debio-icon(:icon="noteIllustration" :size="cardBlock ? 250 : 180" view-box="0 0 100 86" fill)
@@ -61,7 +63,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .customer-
+  .customer-test
     &::v-deep
       .banner__subtitle
         max-width: 36.188rem !important
@@ -70,7 +72,7 @@ export default {
     width: 100%
     height: 200px 
     background: #FFFFFF
-    margin-top: 50px
+    margin-top: 30px
 
     &__tabs
       padding: 3px
