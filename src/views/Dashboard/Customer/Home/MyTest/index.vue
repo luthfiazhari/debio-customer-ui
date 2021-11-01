@@ -78,11 +78,11 @@
         title="Do you want to add your test result as a data bounty?"
         sub-title="You can learn more about data bounty by seeing the information"
         link="/"
-        
+        :loading="isLoading"
       )
         .modal-bounty__cta.d-flex.mt-8.justify-center
-          Button(outlined color="secondary" width="100") Cancel
-          Button(color="secondary" width="100") Yes
+          Button(outlined color="secondary" width="100" @click="cancelBounty") Cancel
+          Button(color="secondary" width="100" @click="submitBounty") Yes
 </template>
 
 <script>
@@ -123,6 +123,7 @@ export default {
     isRegistered: true,
     isProcessed: true,
     isBounty: false,
+    isLoading: false,
     orderHistory: [],
     btnLabel: "",
     headers: [
@@ -236,6 +237,14 @@ export default {
       // const pdf = "/src/assets/Buccalcollection_compressed.pdf"
       // window.open(pdf, "_blank")
 
+    },
+
+    submitBounty() {
+      this.isLoading = true
+    },
+
+    cancelBounty() {
+      this.isBounty = false
     }
   },
 
