@@ -29,16 +29,9 @@ export default {
     outlined: { type: Boolean, default: false },
     height: String
   },
-  mounted() {
-    this.changeStyle()
-  },
   methods: {
     onClick(e) {
       this.$emit("click", e)
-    },
-
-    changeStyle() {
-      // TODO: Do something
     }
   }
 }

@@ -45,34 +45,44 @@
                       height="25px"
                       width="50%"
                       dark
-                      color="secondary"
-                      :to="{ name: 'order-history-detail', params: item}"
-                    ) Details
-                    
-                    Button(
-
-                      height="25px"
-                      width="50%"
-                      dark
                       color="primary"
-                      :disabled="isRegistered"
-                    ) Instruction
+                      :to="{ name: 'order-history-detail', params: item}"
+                    ) Detail
                     
                     Button(
-                      v-if="!isReady"
+                      v-if="item.status == 'Registered'"
                       height="25px"
                       width="50%"
                       dark
                       color="secondary"
-                      :disabled="!isReady"
+                      @click="goToInstruction"
+                    ) Instruction
+
+                    Button(
+                      v-if="item.status == 'ResultReady'"
+                      height="25px"
+                      width="50%"
+                      dark
+                      color="secondary"
+                      @click="goToStakeData"
                     ) Add as Bounty
-                
+
                 template(v-slot:[`item.status`]="{item}")
                   .customer-my-test__status
                   span(:style="{color: setStatusColor(item.status)}") {{ item.status }}
           v-tab-item
             StakingServiceTab
 
+      modalBounty(
+        v-if="isBounty"
+        title="Do you want to add your test result as a data bounty?"
+        sub-title="You can learn more about data bounty by seeing the information"
+        link="/"
+        
+      )
+        .modal-bounty__cta.d-flex.mt-8.justify-center
+          Button(outlined color="secondary" width="100") Cancel
+          Button(color="secondary" width="100") Yes
 </template>
 
 <script>
@@ -90,6 +100,7 @@ import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
 import dataTesting from "./dataTesting.json"
+import modalBounty from "../DataBounty/modalBounty"
 
 export default {
   name: "MyTest",
@@ -97,7 +108,8 @@ export default {
   components: {
     StakingServiceTab,
     DataTable,
-    Button
+    Button,
+    modalBounty
   },
 
   data: () => ({ 
@@ -106,10 +118,13 @@ export default {
     cardBlock: false,
     documents: null,
     tabs: null,
+    showing: false,
     isReady: true,
     isRegistered: true,
     isProcessed: true,
+    isBounty: false,
     orderHistory: [],
+    btnLabel: "",
     headers: [
       { text: "Service Name", value: "service_info.name", sortable: true },
       { text: "Lab Name", value: "lab_info.name", sortable: true },
@@ -213,10 +228,14 @@ export default {
 
     goToStakeData() {
       console.log("stake data")
+      this.isBounty = true
     },
 
     goToInstruction() {
       console.log("insturction")
+      // const pdf = "/src/assets/Buccalcollection_compressed.pdf"
+      // window.open(pdf, "_blank")
+
     }
   },
 
@@ -231,6 +250,8 @@ export default {
     userAddress() {
       return JSON.parse(localStorage.getKeystore()) ["Address"]
     }
+
+
   }
 }
 </script>
@@ -243,7 +264,7 @@ export default {
 
   .customer-my-test
     width: 100%
-    height: 200px 
+    height: 100% 
     background: #FFFFFF
     margin-top: 50px
 
@@ -255,7 +276,7 @@ export default {
       display: flex
       align-items: center
       gap: 20px
-      margin: 5px
+      margin: 3px 20px
     
     &__title-detail
       margin: 0 10px 0 0
