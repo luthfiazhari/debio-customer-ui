@@ -108,7 +108,7 @@ import {
   FECAL_COLLECTION,
   SALIVA_COLLECTION,
   BUCCAL_COLLEVTION
-} from "@common/constant/instruction-step"
+} from "@/common/constants/instruction-step.js"
 
 export default {
   name: "MyTest",
