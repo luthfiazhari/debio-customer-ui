@@ -101,6 +101,14 @@ import { queryServicesById } from "@/common/lib/polkadot-provider/query/services
 import localStorage from "@/common/lib/local-storage"
 import dataTesting from "./dataTesting.json"
 import modalBounty from "../DataBounty/modalBounty"
+import {
+  COVID_19,
+  DRIED_BLOOD,
+  URINE_COLLECTION,
+  FECAL_COLLECTION,
+  SALIVA_COLLECTION,
+  BUCCAL_COLLEVTION
+} from "@common/constant/instruction-step"
 
 export default {
   name: "MyTest",
@@ -139,7 +147,13 @@ export default {
         align: "center",
         width: "5%"
       }
-    ]
+    ],
+    COVID_19,
+    DRIED_BLOOD,
+    URINE_COLLECTION,
+    FECAL_COLLECTION,
+    SALIVA_COLLECTION,
+    BUCCAL_COLLEVTION
   }),
 
   mounted() {
@@ -234,9 +248,8 @@ export default {
 
     goToInstruction() {
       console.log("insturction")
-      // const pdf = "/src/assets/Buccalcollection_compressed.pdf"
-      // window.open(pdf, "_blank")
-
+      const pdf = "assets/Buccalcollection_compressed.pdf"//
+      window.open(pdf, "_blank")
     },
 
     submitBounty() {
