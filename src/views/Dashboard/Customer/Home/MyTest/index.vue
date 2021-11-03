@@ -3,9 +3,11 @@
     ui-debio-banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
+      withDecoration
+      gradientColor="tertiary"
     )
       template(slot="illustration")
-        ui-debio-icon(:icon="noteIllustration" :size="cardBlock ? 250 : 180" view-box="0 0 100 86" fill)
+        ui-debio-icon(:icon="medicalResearchIllustration" :size="cardBlock ? 250 : 180" view-box="10 0 245 175" fill)
 
       template(slot="cta")
         ui-debio-card
@@ -55,7 +57,7 @@
                       width="50%"
                       dark
                       color="secondary"
-                      @click="goToInstruction"
+                      @click="goToInstruction(item.service_info.dna_collection_process)"
                     ) Instruction
 
                     Button(
@@ -86,7 +88,7 @@
 </template>
 
 <script>
-import { layersIcon, noteIllustration } from "@/common/icons"
+import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
@@ -153,7 +155,8 @@ export default {
     URINE_COLLECTION,
     FECAL_COLLECTION,
     SALIVA_COLLECTION,
-    BUCCAL_COLLEVTION
+    BUCCAL_COLLEVTION,
+    medicalResearchIllustration
   }),
 
   mounted() {
@@ -246,10 +249,27 @@ export default {
       this.isBounty = true
     },
 
-    goToInstruction() {
+    goToInstruction(item) {
       console.log("insturction")
-      const pdf = "assets/Buccalcollection_compressed.pdf"//
-      window.open(pdf, "_blank")
+      console.log(item)
+      if (item == "Covid 19 Saliva Test") {
+        window.open(this.COVID_19, "_blank")
+      }
+      if (item == "Blood Cells - Dried Blood Spot Collection Process") {
+        window.open(this.DRIED_BLOOD, "_blank")
+      }
+      if (item == "Epithelial Cells - Buccal Swab Collection Process") {
+        window.open(this.BUCCAL_COLLEVTION, "_blank")
+      }
+      if (item == "Fecal Matters - Stool Collection Process") {
+        window.open(this.FECAL_COLLECTION, "_blank")
+      }
+      if (item == "Saliva - Saliva Collection Process") {
+        window.open(this.SALIVA_COLLECTION, "_blank")
+      }
+      if (item == "Urine - Clean Catch Urine Collection Process") {
+        window.open(this.URINE_COLLECTION, "_blank")
+      }
     },
 
     submitBounty() {
@@ -279,10 +299,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .customer-
+  .customer-test
     &::v-deep
-      .banner__subtitle
-        max-width: 36.188rem !important
+      
 
   .customer-my-test
     width: 100%

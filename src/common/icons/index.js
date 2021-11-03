@@ -38,6 +38,7 @@ import gridIcon from "./grid"
 import boxIcon from "./box"
 import databaseIcon from "./database"
 import phoneIcon from "./phone"
+import medicalResearchIllustration from "./medicalResearchIllustration"
 
 export {
   creditCardIcon,
@@ -79,5 +80,6 @@ export {
   gridIcon,
   boxIcon,
   databaseIcon,
-  phoneIcon
+  phoneIcon,
+  medicalResearchIllustration
 }

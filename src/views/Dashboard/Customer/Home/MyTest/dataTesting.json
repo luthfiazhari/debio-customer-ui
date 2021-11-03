@@ -27,7 +27,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Covid 19 Saliva Test",
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -103,7 +103,7 @@
         "service_info": {
           "image": "mdi-pill",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Blood Cells - Dried Blood Spot Collection Process",
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -179,7 +179,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Epithelial Cells - Buccal Swab Collection Process",
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -255,7 +255,7 @@
         "service_info": {
           "image": "$dgi-skin",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Fecal Matters - Stool Collection Process",
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -331,7 +331,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Saliva - Saliva Collection Process",
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -407,7 +407,7 @@
         "service_info": {
           "image": "$dgi-skin",
           "test_result_sample": "",
-          "dna_collection_process": null,
+          "dna_collection_process": "Urine - Clean Catch Urine Collection Process",
           "prices_by_currency": [
             {
               "total_price": 20,
