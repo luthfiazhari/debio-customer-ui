@@ -212,16 +212,14 @@ export default {
     },
 
     goToOrderHistory() {
-      console.log("to order history")
       // this.$router.push({ name: "customer-test" }) //go to order history page 
     },
     goToDetail() { //item
-      console.log("go to detail")
       // this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
     },
 
     async checkOrderLenght() {
-      if (this.orderHistory.length == 0) {
+      if (!this.orderHistory.length) {
         this.titleWording = "You haven’t made any order."
         return
       }
