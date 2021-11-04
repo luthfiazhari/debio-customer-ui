@@ -15,6 +15,7 @@
         )
           MenuCard.card(  
             :title="service.serviceName"
+            :icon="service.serviceImage"
             :rate="service.serviceRate"
             :countRate="service.countServiceRate"
             :lab-name="service.labName"
@@ -28,7 +29,6 @@
       template
         ServiceDetailDialog(
           :show="showServiceDetailDialog"
-          @onSelect="selectService"
           @close="showServiceDetailDialog = false"
           )
 
@@ -37,9 +37,9 @@
 <script>
 
 import { mapState, mapMutations } from "vuex"
-import NoLab from "./NoLab.vue"
-import MenuCard from "./MenuCard.vue"
-import ServiceDetailDialog from "./ServiceDetailDialog.vue"
+import NoLab from "../NoLab.vue"
+import MenuCard from "../MenuCard.vue"
+import ServiceDetailDialog from "../ServiceDetailDialog.vue"
 
 
 export default {
@@ -78,12 +78,14 @@ export default {
           name: labName,
           address: labAddress,
           city,
-          region
+          region,
+          verification_status:  verificationStatus
         },
         info: {
           name: serviceName,
           category: serviceCategory,
           description: serviceDescription,
+          image: serviceImage,
           expected_duration: {
             duration,
             duration_type: durationType
@@ -118,6 +120,7 @@ export default {
       const service = {
         serviceName,
         serviceRate,
+        serviceImage,
         serviceCategory,
         serviceDescription,
         labName,
@@ -131,13 +134,16 @@ export default {
         countRateLab,
         countServiceRate,
         duration,
-        durationType
+        durationType,
+        verificationStatus
       }
 
-      this.serviceList.push(service)
+      if (service.verificationStatus === "Verified") {
+        this.serviceList.push(service)
+      }
     }
 
-    if (!this.services.length) {
+    if (!this.serviceList.length) {
       this.showNoLab = true
     }
 
@@ -153,10 +159,6 @@ export default {
     async getDetailService(service) {
       this.setProductsToRequest(service)
       this.showServiceDetailDialog = true
-    },
-
-    async selectService () {
-      this.$emit("onSelect")
     }
   }
 }

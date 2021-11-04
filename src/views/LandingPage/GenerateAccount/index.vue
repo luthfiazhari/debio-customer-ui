@@ -7,7 +7,7 @@
         font-family: Robto;
         font-style: normal;
         font-weight: bold;
-        font-size: 28px;
+        font-size: 25px;
         line-height: 0px;
         color: #C400A5;
     }
@@ -61,7 +61,7 @@ export default {
   }),
   methods: {
     previous() {
-      this.$router.push({name: "landing-page"})
+      this.$router.push({name: "sign-in"})
     },
     generateMnemonic() {
       this.$router.push({name: "generate-mnemonic"})
