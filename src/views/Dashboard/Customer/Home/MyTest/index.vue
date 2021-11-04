@@ -94,7 +94,6 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import {
-  // searchOrder,
   ordersByCustomer,
   getOrdersData
 } from "@/common/lib/polkadot-provider/query/orders"
@@ -102,7 +101,7 @@ import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
 import dataTesting from "./dataTesting.json"
-import modalBounty from "../DataBounty/modalBounty"
+import modalBounty from "./modalBounty.vue"
 import {
   COVID_19,
   DRIED_BLOOD,
@@ -128,9 +127,6 @@ export default {
     cardBlock: false,
     documents: null,
     tabs: null,
-    showing: false,
-    isReady: true,
-    isRegistered: true,
     isProcessed: true,
     isBounty: false,
     isLoading: false,
@@ -237,13 +233,11 @@ export default {
       this.isProcessed = status ? status : null
     },
 
-    goToDetail() {
-      console.log("detail")
-    },
-
     goToStakeData() {
       console.log("stake data")
+      console.log(this.isBounty, " before")
       this.isBounty = true
+      console.log(this.isBounty, " afteer")
     },
 
     goToInstruction(item) {
