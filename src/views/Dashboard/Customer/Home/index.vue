@@ -151,6 +151,7 @@ export default {
   name: "CustomerHome",
 
   components: {Banner, DataTable, Button },
+
   data: () => ({
     creditCardIcon,
     layersIcon,
@@ -161,7 +162,6 @@ export default {
     testHistory: [],
     titleWording: "",
     doctorDashboardIllustrator,
-
     headers: [
       { text: "Service Name", value: "service_info.name",sortable: true },
       { text: "Lab Name", value: "lab_info.name", sortable: true },

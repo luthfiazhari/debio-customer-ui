@@ -20,7 +20,6 @@
                     height="500px"
                     width="100%"
                   )
-                  //- span(v-else) {{reportResult}}
                   div
                     span {{dummyResult.title}} 
                     br
@@ -29,7 +28,6 @@
                   div
                     span {{dummyResult.content}}
           v-col(cols="12" md="3")
-            //- div(class="mb-2")
             div.buttonSection(v-for="(file, index) in files" :key="file.name")
               ui-debio-card(
                 :title="file.fileTitle"
@@ -45,20 +43,7 @@
                   stroke
                   color="#c400a5"
                 )
-            //- ui-debio-card(
-            //-   class="mt-2"
-            //-   tiny-card
-            //-   with-icon
-            //-   title="Data Bounty"
-            //-   sub-title="Provide your data anonymously and get DBIO Reward"
-            //-   )
-            //-     ui-debio-icon(
-            //-       size="30"
-            //-       slot="icon"
-            //-       :icon="debioIcon"
-            //-       stroke
-            //-     )
-            
+
             ui-debio-card(
               class="mt-2"
               tiny-card
@@ -74,11 +59,7 @@
                   stroke
                   color="#c400a5"
                 )
-      //- Modal(
-      //-   :show="modalStatus"
-      //-   title="Please tell us about your experience!"
-      
-      //- )
+
       ui-debio-modal(
         :show="showModalRating"
         :cta-action="submitRating"
@@ -139,11 +120,6 @@ export default {
   }),
 
   methods: {
-    actionDownload(type) {
-
-      console.log(type)
-    },
-
     actionRating() {
       console.log("rating")
       this.showModalRating = true
