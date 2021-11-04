@@ -26,6 +26,7 @@
       @click:row="clickedRow"
       :loading-text="computedLoadingText"
       :disable-sort="disableSort"
+      :show-footer="showFooter"
     )
       //- <!-- Slots for row formatting -->
       template(v-for="(slot, name) in $scopedSlots" v-slot:[name]="item")
@@ -34,7 +35,7 @@
 
       //- <!-- Custom Footer -->
       template(v-slot:footer)
-        div(class="footer d-flex justify-space-between align-center flex-wrap")
+        div(v-if="showFooter" class="footer d-flex justify-space-between align-center flex-wrap")
           div(
             class="pagination-info"
           ) Showing
@@ -68,7 +69,8 @@ export default {
     expand: { type: Boolean},
     customFilter: {type: [String, Boolean], default: false},
     loadingText: {type: String, default: ""},
-    disableSort: {type: Boolean, default: false}
+    disableSort: {type: Boolean, default: false},
+    showFooter: {type: Boolean, default: true}
   },
   data: () => ({
     page: 1,

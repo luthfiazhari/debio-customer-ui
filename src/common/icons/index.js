@@ -38,6 +38,7 @@ import gridIcon from "./grid"
 import boxIcon from "./box"
 import databaseIcon from "./database"
 import phoneIcon from "./phone"
+import doctorDashboardIllustrator from "./doctorDashboardIllustrator"
 import microscopeIcon from "./microscope"
 import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
@@ -94,6 +95,7 @@ export {
   boxIcon,
   databaseIcon,
   phoneIcon,
+  doctorDashboardIllustrator
   microscopeIcon,
   weightLifterIcon,
   fileSearchIcon,
