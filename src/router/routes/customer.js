@@ -4,6 +4,7 @@ const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
   beforeEnter: checkIsLoggedIn,
+  name: "customer",
   redirect: { name: "customer-dashboard" },
   children: [
     {
@@ -15,49 +16,64 @@ const customerRoutes = [{
     {
       path: "emr",
       name: "customer-emr",
-      meta: { pageHeader: "Emr" },
+      meta: { pageHeader: "My EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr")
-    },  
+    },
     {
       path: "emr/upload",
       name: "customer-emr-create",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Upload EMR" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Create")
     },
     {
       path: "emr/details/:id?",
       name: "customer-emr-details",
-      meta: { pageHeader: "Emr Create", parent: "customer-emr" },
+      meta: { pageHeader: "Details", parent: "customer-emr" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/Emr/Details")
     },
     {
       path: "my-test",
       name: "my-test",
-      meta: { pageHeader: "My Test"},
+      meta: { pageHeader: "My Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest")
+    },
+    {
+      path: "order-history-detail",
+      name: "order-history-detail",
+      meta: {
+        pageHeader: "Order History Detail",
+        parent: "customer-test"
+      },
+      component: () => import( /* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest/OrderHistoryDetail")
+    },
+    {
+      path: "test-result",
+      name: "test-result",
+      meta: { pageHeader: "Test Result", parent: "customer-test" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/MyTest/TestResult")
     },
     {
       path: "request-test",
       name: "customer-request-test",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      meta: { pageHeader: "Request Test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest")
     },
     {
-      path: "select-service",
-      name: "customer-select-service",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      path: "request-test/service",
+      name: "customer-request-test-service",
+      meta: { pageHeader: "Select Services", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/SelectServicePage")
     },
     {
-      path: "customer-checkout",
-      name: "customer-checkout",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      path: "request-test/checkout/:id?",
+      name: "customer-request-test-checkout",
+      meta: { pageHeader: "Checkout", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Checkout")
     },
     {
-      path: "customer-success",
-      name: "customer-success",
-      meta: { pageHeader: "Request Test", parent: "customer-test"},
+      path: "request-test/success",
+      name: "customer-request-test-success",
+      meta: { pageHeader: "Success", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
     },
 
@@ -73,13 +89,13 @@ const customerRoutes = [{
       path: "payment/histories",
       name: "customer-payment-history",
       meta: { pageHeader: "Payment History" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory")
     },
     {
-      path: "payment/details",
+      path: "payment/details/:id?",
       name: "customer-payment-details",
       meta: { pageHeader: "Details", parent: "customer-payment-history" },
-      component: () => import(/* webpackChunkName */ "../../views/Dashboard/Customer/Home/PaymentHistory/Details")
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")
     }
   ]
 }]

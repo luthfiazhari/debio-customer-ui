@@ -160,10 +160,7 @@ export default {
   }),
 
   mounted() {
-    window.addEventListener("resize", () => {
-      if (window.innerWidth <= 959) this.cardBlock = true
-      else this.cardBlock = false
-    })
+    this.onSearchInput();
   },
   async created(){
     this.onSearchInput()
@@ -307,7 +304,7 @@ export default {
     width: 100%
     height: 100% 
     background: #FFFFFF
-    margin-top: 50px
+    margin-top: 30px
 
     &__tabs
       padding: 3px

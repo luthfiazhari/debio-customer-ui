@@ -39,10 +39,11 @@ export default {
   computed: {
     classes() {
       return [
-        { "banner--with-gradient": this.gradientColor && /^(primary|secondary|tertiary)$/ },
+        { "banner--with-gradient": this.gradientColor && /^(primary|secondary|tertiary|violet)$/ },
         { "banner--gradient-primary": this.gradientColor === "primary" },
         { "banner--gradient-secondary": this.gradientColor === "secondary" },
         { "banner--gradient-tertiary": this.gradientColor === "tertiary" },
+        { "banner--gradient-violet": this.gradientColor === "violet" },
         { "banner--with-decoration": this.withDecoration }
       ]
     }
@@ -108,6 +109,10 @@ export default {
     &--gradient-tertiary
       .ui-debio-card__body
         background: linear-gradient(267.84deg, #D783FF 18.61%, #AF5EFF 55.16%, #A445D0 93.27%)
+
+    &--gradient-violet
+      .ui-debio-card__body
+        background: linear-gradient(267.84deg, #FFAAD4 66.51%, #FFD3E9 80%)
 
     @media screen and (max-width: 959px)
       &__content,
