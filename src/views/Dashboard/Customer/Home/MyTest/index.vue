@@ -76,13 +76,13 @@
             StakingServiceTab
 
       modalBounty(
-        v-if="isBounty"
+        :show="isBounty"
         title="Do you want to add your test result as a data bounty?"
         sub-title="You can learn more about data bounty by seeing the information"
         link="/"
         :loading="isLoading"
       )
-        .modal-bounty__cta.d-flex.mt-8.justify-center
+        .modal-bounty__cta.d-flex.mt-8
           Button(outlined color="secondary" width="100" @click="cancelBounty") Cancel
           Button(color="secondary" width="100" @click="submitBounty") Yes
 </template>
@@ -298,11 +298,15 @@ export default {
     width: 100%
     height: 100% 
     background: #FFFFFF
-    margin-top: 30px
+
 
     &__tabs
-      padding: 3px
+      padding: 2px
     
+    &__table
+      padding-top: 0px !important
+      margin-top: 0px !important
+
     &__actions
       padding: 25px
       display: flex
@@ -313,4 +317,13 @@ export default {
     &__title-detail
       margin: 0 10px 0 0
       border-radius: 10px
+
+  .modal-bounty__cta
+    justify-content: space-around !important
+  
+  .degenics-datatable-card
+    padding-top: 0px !important
+    
+  .degenics-data-table
+    margin-top: 0px !important
 </style>
