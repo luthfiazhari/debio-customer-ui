@@ -1,17 +1,18 @@
 <template lang="pug">
   .customer-test
-    ui-debio-banner(
+    ui-debio-banner.customer-test__banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymousely to expert and scientist!"
-      withDecoration
+      with-decoration
       gradientColor="tertiary"
     )
       template(slot="illustration")
-        ui-debio-icon(:icon="medicalResearchIllustration" :size="cardBlock ? 250 : 180" view-box="10 0 245 175" fill)
-
-      template(slot="cta")
-        ui-debio-card
-          ui-debio-icon(:icon="layersIcon" slot="icon" size="34" color="#C400A5" stroke)   
+        ui-debio-icon(
+          :icon="medicalResearchIllustration"
+          :size="cardBlock ? 250 : 180"
+          view-box="10 0 245 175"
+          fill
+        )
 
     .customer-my-test
       .customer-my-test__tabs
@@ -152,21 +153,27 @@ export default {
     FECAL_COLLECTION,
     SALIVA_COLLECTION,
     BUCCAL_COLLEVTION,
-    medicalResearchIllustration
+    medicalResearchIllustration,
+    isLoadingOrderHistory: false
   }),
 
   mounted() {
-    this.onSearchInput();
+    // this.onSearchInput();
+    this.getOrderHistory()
+    console.log(this.orderHistory, "<=== order history saat mounted")
   },
-  async created(){
-    this.onSearchInput()
-  },
+
+  // async created(){
+  //   this.onSearchInput()
+  // },
+
   methods: {
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
     },
 
-    async onSearchInput() {
+    async onSearchInput() {// this from indexer
+      console.log("masuk search input")
       this.orderHistory = dataTesting.data.map(result => ({
         ...result._source,
         id: result._id,
@@ -176,7 +183,7 @@ export default {
       }))
     },
 
-    setStatusColor(status) {
+    setStatusColor(status) { //change color for each order status
       let colors = Object.freeze({
         REGISTERED: "#44921A",
         PAID: "#E27625",
@@ -187,45 +194,122 @@ export default {
       return colors[status.toUpperCase()]
     },
 
-    async getOrderHistory() {
-      this.isLoadingOrderHistory = true;
+    async getOrderHistory() {//this for get order from substrate
       try {
-        this.orderHistory = [];
-        const address = this.wallet.address;
-        const listOrderId = await ordersByCustomer(this.api, address);
+        console.log("<=== masuk order history")
+        // const address = this.wallet.address
+        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25"
+        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
+  
+        for (let i = 0; i < listOrderId.length; i++) {
+        // for (let i = 0; i < 1; i++) {
+          console.log("masuk looping")
 
-        var lengthMax = 3;
-        if (listOrderId != null) {
-          listOrderId.reverse();
-          if (listOrderId.length < lengthMax) {
-            lengthMax = listOrderId.length;
-          }
-
-          for (let i = 0; i < lengthMax; i++) {
-            const detailOrder = await getOrdersData(this.api, listOrderId[i]);
-            const detaillab = await queryLabsById(
-              this.api,
-              detailOrder.seller_id
-            );
-            const detailService = await queryServicesById(
-              this.api,
-              detailOrder.service_id
-            );
-            this.prepareOrderData(detailOrder, detaillab, detailService);
-          }
-
-          this.orderHistory.sort(
-            (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-          );
-          const status = localStorage.getLocalStorageByName("lastOrderStatus")
-          if (status) this.orderHistory[0].status = status
+          const detailOrder = await getOrdersData(this.api, listOrderId[i])
+          const detaillab = await queryLabsById(this.api, detailOrder.seller_id);
+          const detailService = await queryServicesById(this.api, detailOrder.service_id);
+          this.prepareOrderData(detailOrder, detaillab, detailService);
         }
-
-        this.isLoadingOrderHistory = false;
-      } catch (err) {
-        console.log(err);
-        this.isLoadingOrderHistory = false;
+        
+        this.orderHistory.sort(
+          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
+        )
+  
+        const status = localStorage.getLocalStorageByName("lastOrderStatus")
+        if (status) this.orderHistory[0].status = status
+        
+      } catch (error) {
+        console.log(error)
+      } finally {
+        // this.isLoadingOrderHistory = false
       }
+    },
+
+    prepareOrderData(detailOrder, detaillab, detailService) {
+      console.log("masuk prepare order")
+      // console.log(detailOrder, "detail order di prepare data")
+      // console.log(detaillab, "detail lab di prepare data")
+      // console.log(detailService, "detail service di prepare data")
+
+
+      const title = detailService.info.name
+      const description = detailService.info.description
+      const serviceImage = detailService.info.image
+      const category = detailService.info.category
+      const test_result_sample = detailService.info.test_result_sample // eslint-disable-line
+      const prices_by_currency = detailService.info.prices_by_currency // eslint-disable-line
+      const expected_duration = detailService.info.expected_duration // eslint-disable-line
+      const service_id = detailService.id // eslint-disable-line
+      const service_info = { // eslint-disable-line
+        name: title,
+        description: description,
+        image: serviceImage,
+        category: category,
+        test_result_sample: test_result_sample,
+        prices_by_currency: prices_by_currency,
+        expected_duration: expected_duration
+
+      }
+
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profile_image
+      const lab_id = detaillab.info.box_public_key // eslint-disable-line
+      const lab_info = { // eslint-disable-line
+        name: labName,
+        address: address,
+        profile_image: labImage
+      }
+
+      let icon = "mdi-needle";
+      if (detailService.info.image != null) {
+        icon = detailService.info.image;
+      }
+
+      const number = detailOrder.id
+      const dateSet = new Date(
+        parseInt(detailOrder.created_at.replace(/,/g, ""))
+      )
+      const dateUpdate = new Date(
+        parseInt(detailOrder.updated_at.replace(/,/g, ""))
+      )
+      const timestamp = dateSet.getTime().toString();
+      const orderDate = dateSet.toLocaleString("en-US", {
+        weekday: "short", // long, short, narrow
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long", // numeric, 2-digit, long, short, narrow
+        hour: "numeric", // numeric, 2-digit
+        minute: "numeric"
+      })
+      const updated_at = dateUpdate.toLocaleString("en-US", { // eslint-disable-line
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const created_at = dateSet.toLocaleString("en-US", { // eslint-disable-line
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      });
+      const status = detailOrder.status
+      const dna_sample_tracking_id = detailOrder.dna_sample_tracking_id // eslint-disable-line
+      const order = {
+        icon,
+        number,
+        timestamp,
+        status,
+        dna_sample_tracking_id,
+        orderDate,
+        service_id,
+        service_info,
+        lab_id,
+        lab_info,
+        updated_at,
+        created_at
+      }
+
+      this.orderHistory.push(order)
     },
 
     checkLastOrder() {

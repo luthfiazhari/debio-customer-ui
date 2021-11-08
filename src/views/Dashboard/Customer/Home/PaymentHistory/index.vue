@@ -86,10 +86,12 @@ export default {
 
   async created() {
     await this.metamaskDispatchAction(this.onSearchInput)
+    console.log(this.payments, "<== payment")
   },
 
   methods: {
     async onSearchInput(val) {
+      console.log("masu ke on search input")
       const results = await fetchPaymentHistories(val)
       this.payments = results.map(result => ({
         ...result._source,
