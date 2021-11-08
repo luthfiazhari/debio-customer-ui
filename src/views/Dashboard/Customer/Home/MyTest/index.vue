@@ -101,7 +101,6 @@ import {
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
-import dataTesting from "./dataTesting.json"
 import modalBounty from "./modalBounty.vue"
 import {
   COVID_19,
@@ -158,29 +157,13 @@ export default {
   }),
 
   mounted() {
-    // this.onSearchInput();
     this.getOrderHistory()
     console.log(this.orderHistory, "<=== order history saat mounted")
   },
 
-  // async created(){
-  //   this.onSearchInput()
-  // },
-
   methods: {
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
-    },
-
-    async onSearchInput() {// this from indexer
-      console.log("masuk search input")
-      this.orderHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        timestamp: parseInt(result._source.created_at)
-      }))
     },
 
     setStatusColor(status) { //change color for each order status
@@ -196,19 +179,15 @@ export default {
 
     async getOrderHistory() {//this for get order from substrate
       try {
-        console.log("<=== masuk order history")
-        // const address = this.wallet.address
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25"
-        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
+        this.isLoadingOrderHistory = true
+        const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, address)
   
         for (let i = 0; i < listOrderId.length; i++) {
-        // for (let i = 0; i < 1; i++) {
-          console.log("masuk looping")
-
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.seller_id);
+          const detaillab = await queryLabsById(this.api, detailOrder.seller_id)
           const detailService = await queryServicesById(this.api, detailOrder.service_id);
-          this.prepareOrderData(detailOrder, detaillab, detailService);
+          this.prepareOrderData(detailOrder, detaillab, detailService)
         }
         
         this.orderHistory.sort(
@@ -221,17 +200,11 @@ export default {
       } catch (error) {
         console.log(error)
       } finally {
-        // this.isLoadingOrderHistory = false
+        this.isLoadingOrderHistory = false
       }
     },
 
     prepareOrderData(detailOrder, detaillab, detailService) {
-      console.log("masuk prepare order")
-      // console.log(detailOrder, "detail order di prepare data")
-      // console.log(detaillab, "detail lab di prepare data")
-      // console.log(detailService, "detail service di prepare data")
-
-
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -248,7 +221,6 @@ export default {
         test_result_sample: test_result_sample,
         prices_by_currency: prices_by_currency,
         expected_duration: expected_duration
-
       }
 
       const labName = detaillab.info.name
