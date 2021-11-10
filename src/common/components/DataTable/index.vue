@@ -47,7 +47,7 @@
           v-pagination(
             v-model="page"
             :length="pageCount"
-            :total-visible="10"
+            :total-visible="7"
             color="secondary"
           )
 
@@ -219,6 +219,5 @@ export default {
       li:first-child, li:last-child 
         button
           width: 24px
-
 
 </style>

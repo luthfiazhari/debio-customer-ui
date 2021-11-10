@@ -35,11 +35,12 @@
                       ui-debio-avatar(
                         :src="'https://picsum.photos/200/300'"
                         size="42"
+                        rounded
                       )
                     div
-                      div
+                      div.customer-my-test__title-name
                         span {{ item.service_info.name }}
-                      div
+                      div.customer-my-test__title-number
                         span {{ item.dna_sample_tracking_id}}
 
                 template(v-slot:[`item.actions`]="{ item }")
@@ -53,7 +54,8 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status == 'Registered'"
+                      v-if="item.status != 'ResultReady'"
+                      v-show="item.status == 'Registered'"
                       height="25px"
                       width="50%"
                       dark
@@ -62,7 +64,8 @@
                     ) Instruction
 
                     Button(
-                      v-if="item.status == 'ResultReady'"
+                      v-if="item.status != 'Registered'"
+                      v-show="item.status == 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
@@ -110,6 +113,7 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLEVTION
 } from "@/common/constants/instruction-step.js"
+import dataTesting from "./dataTesting.json"
 
 export default {
   name: "MyTest",
@@ -157,8 +161,9 @@ export default {
   }),
 
   mounted() {
-    this.getOrderHistory()
-    console.log(this.orderHistory, "<=== order history saat mounted")
+    // this.getOrderHistory()
+    // console.log(this.orderHistory, "<=== order history saat mounted")
+    this.onSearchInput()
   },
 
   methods: {
@@ -166,11 +171,26 @@ export default {
       this.$router.push({ name: "customer-request-test-select-lab"})
     },
 
+    async onSearchInput() {
+      console.log("masuk mounted")
+      this.orderHistory = dataTesting.data.map(result => ({
+        ...result._source,
+        id: result._id,
+        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
+        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
+        timestamp: parseInt(result._source.created_at)
+      }))
+    },
+
     setStatusColor(status) { //change color for each order status
       let colors = Object.freeze({
-        REGISTERED: "#44921A",
-        PAID: "#E27625",
-        RESULTREADY: "#5640A5",
+        REGISTERED: "#6F4CEC",
+        PAID: "#44921A",
+        UNPAID: "#FAAD15",
+        FULFILLED: "#44921A",
+        CANCELLED: "#9B1B37",
+        FAILED: "#9B1B37",
+        RESULTREADY: "#6F4CEC",
         REJECTED: "#9B1B37",
         SUBMITEDASDATABOUNTY: "#5640A5"
       })
@@ -179,9 +199,10 @@ export default {
 
     async getOrderHistory() {//this for get order from substrate
       try {
+        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25"
         this.isLoadingOrderHistory = true
-        const address = this.wallet.address
-        const listOrderId = await ordersByCustomer(this.api, address)
+        // const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
   
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
@@ -205,6 +226,10 @@ export default {
     },
 
     prepareOrderData(detailOrder, detaillab, detailService) {
+      console.log(detailOrder, "detail order")
+      console.log(detaillab, "detail lab")
+      console.log(detailService, "detail service")
+      
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -213,6 +238,7 @@ export default {
       const prices_by_currency = detailService.info.prices_by_currency // eslint-disable-line
       const expected_duration = detailService.info.expected_duration // eslint-disable-line
       const service_id = detailService.id // eslint-disable-line
+      const dna_collection_process = detailService.info.dna_collection_process // eslint-disable-line
       const service_info = { // eslint-disable-line
         name: title,
         description: description,
@@ -220,7 +246,8 @@ export default {
         category: category,
         test_result_sample: test_result_sample,
         prices_by_currency: prices_by_currency,
-        expected_duration: expected_duration
+        expected_duration: expected_duration,
+        dna_collection_process: dna_collection_process
       }
 
       const labName = detaillab.info.name
@@ -373,6 +400,10 @@ export default {
     &__title-detail
       margin: 0 10px 0 0
       border-radius: 10px
+    
+    &__title-number
+      color: #8C8C8C
+
 
   .modal-bounty__cta
     justify-content: space-around !important
