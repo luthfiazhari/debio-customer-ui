@@ -90,7 +90,7 @@ export default {
       return [
         val => !!val || "Password is required",
         val => (val && val.length >= 8) || "Password Min 8 Character",
-        val => /^[a-zA-Z0-9-_]+$/.test(val) || "Password must a-z, A-Z, "
+        val => /^[a-zA-Z0-9-_]+$/.test(val) || "Password must a-z, A-Z,"
       ]
     },
 
