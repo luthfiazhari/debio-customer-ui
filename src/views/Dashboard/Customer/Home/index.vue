@@ -85,7 +85,7 @@
                 size="20"
                 color="#C400A5"
                 stroke
-                @click="goToOrderDetail(item)"
+                @click="goToPaymentDetail(item.id)"
                 )
 
 
@@ -137,7 +137,7 @@
                 slot="icon" size="20"
                 color="#C400A5"
                 stroke
-                @click="goToPaymentDetail(item.id)"
+                @click="goToOrderDetail(item)"
                 )
 </template>
 
@@ -231,7 +231,7 @@ export default {
     },
 
     goToOrderDetail(item) { //item
-      // this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
+      this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
       console.log(item, "<====== item")
     },
 
