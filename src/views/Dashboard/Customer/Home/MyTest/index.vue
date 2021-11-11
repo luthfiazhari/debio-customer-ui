@@ -29,7 +29,7 @@
                 :headers="headers"
                 :items="orderHistory"
               )
-                template(class="titleSection" v-slot:[`item.service_info.name`]="{item}")
+                template(class="titleSection" v-slot:[`item.serviceInfo.name`]="{item}")
                   div(class="detailLab d-flex align-center")
                     .customer-my-test__title-detail
                       ui-debio-avatar(
@@ -39,9 +39,9 @@
                       )
                     div
                       div.customer-my-test__title-name
-                        span {{ item.service_info.name }}
+                        span {{ item.serviceInfo.name }}
                       div.customer-my-test__title-number
-                        span {{ item.dna_sample_tracking_id}}
+                        span {{ item.dnaSampleTrackingId}}
 
                 template(v-slot:[`item.actions`]="{ item }")
                   .customer-my-test__actions
@@ -60,7 +60,7 @@
                       width="50%"
                       dark
                       color="secondary"
-                      @click="goToInstruction(item.service_info.dna_collection_process)"
+                      @click="goToInstruction(item.serviceInfo.dnaCollectionProcess)"
                     ) Instruction
 
                     Button(
@@ -111,7 +111,7 @@ import {
   URINE_COLLECTION,
   FECAL_COLLECTION,
   SALIVA_COLLECTION,
-  BUCCAL_COLLEVTION
+  BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
 import dataTesting from "./dataTesting.json"
 
@@ -137,10 +137,10 @@ export default {
     orderHistory: [],
     btnLabel: "",
     headers: [
-      { text: "Service Name", value: "service_info.name", sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
-      { text: "Order Date", value: "created_at", sortable: true },
-      { text: "Last Update", value: "updated_at", sortable: true },
+      { text: "Service Name", value: "serviceInfo.name", sortable: true },
+      { text: "Lab Name", value: "labInfo.name", sortable: true },
+      { text: "Order Date", value: "createdAt", sortable: true },
+      { text: "Last Update", value: "updatedAt", sortable: true },
       { text: "Test Status", value: "status", sortable: true },
       {
         text: "Actions",
@@ -155,15 +155,15 @@ export default {
     URINE_COLLECTION,
     FECAL_COLLECTION,
     SALIVA_COLLECTION,
-    BUCCAL_COLLEVTION,
+    BUCCAL_COLLECTION,
     medicalResearchIllustration,
     isLoadingOrderHistory: false
   }),
 
   mounted() {
-    // this.getOrderHistory()
+    this.getOrderHistory()
     // console.log(this.orderHistory, "<=== order history saat mounted")
-    this.onSearchInput()
+    // this.onSearchInput()
   },
 
   methods: {
@@ -176,9 +176,9 @@ export default {
       this.orderHistory = dataTesting.data.map(result => ({
         ...result._source,
         id: result._id,
-        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        timestamp: parseInt(result._source.created_at)
+        updatedAt: new Date(parseInt(result._source.updatedAt)).toLocaleDateString(),
+        createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
+        timestamp: parseInt(result._source.createdAt)
       }))
     },
 
@@ -199,10 +199,9 @@ export default {
 
     async getOrderHistory() {//this for get order from substrate
       try {
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25"
         this.isLoadingOrderHistory = true
-        // const address = this.wallet.address
-        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
+        const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, address)
   
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
@@ -234,30 +233,30 @@ export default {
       const description = detailService.info.description
       const serviceImage = detailService.info.image
       const category = detailService.info.category
-      const test_result_sample = detailService.info.test_result_sample // eslint-disable-line
-      const prices_by_currency = detailService.info.prices_by_currency // eslint-disable-line
-      const expected_duration = detailService.info.expected_duration // eslint-disable-line
-      const service_id = detailService.id // eslint-disable-line
-      const dna_collection_process = detailService.info.dna_collection_process // eslint-disable-line
-      const service_info = { // eslint-disable-line
+      const testResultSample = detailService.info.testResultSample 
+      const pricesByCurrency = detailService.info.pricesByCurrency 
+      const expectedDuration = detailService.info.expectedDuration 
+      const serviceId = detailService.id 
+      const dnaCollectionProcess = detailService.info.dnaCollectionProcess 
+      const serviceInfo = { 
         name: title,
         description: description,
         image: serviceImage,
         category: category,
-        test_result_sample: test_result_sample,
-        prices_by_currency: prices_by_currency,
-        expected_duration: expected_duration,
-        dna_collection_process: dna_collection_process
+        testResultSample: testResultSample,
+        pricesByCurrency: pricesByCurrency,
+        expectedDuration: expectedDuration,
+        dnaCollectionProcess: dnaCollectionProcess
       }
 
       const labName = detaillab.info.name
       const address = detaillab.info.address
-      const labImage = detaillab.info.profile_image
-      const lab_id = detaillab.info.box_public_key // eslint-disable-line
-      const lab_info = { // eslint-disable-line
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey 
+      const labInfo = { 
         name: labName,
         address: address,
-        profile_image: labImage
+        profileImage: labImage
       }
 
       let icon = "mdi-needle";
@@ -267,10 +266,10 @@ export default {
 
       const number = detailOrder.id
       const dateSet = new Date(
-        parseInt(detailOrder.created_at.replace(/,/g, ""))
+        parseInt(detailOrder.createdAt.replace(/,/g, ""))
       )
       const dateUpdate = new Date(
-        parseInt(detailOrder.updated_at.replace(/,/g, ""))
+        parseInt(detailOrder.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
@@ -281,31 +280,31 @@ export default {
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       })
-      const updated_at = dateUpdate.toLocaleString("en-US", { // eslint-disable-line
+      const updatedAt = dateUpdate.toLocaleString("en-US", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       })
-      const created_at = dateSet.toLocaleString("en-US", { // eslint-disable-line
+      const createdAt = dateSet.toLocaleString("en-US", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       });
       const status = detailOrder.status
-      const dna_sample_tracking_id = detailOrder.dna_sample_tracking_id // eslint-disable-line
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
       const order = {
         icon,
         number,
         timestamp,
         status,
-        dna_sample_tracking_id,
+        dnaSampleTrackingId,
         orderDate,
-        service_id,
-        service_info,
-        lab_id,
-        lab_info,
-        updated_at,
-        created_at
+        serviceId,
+        serviceInfo,
+        labId,
+        labInfo,
+        updatedAt,
+        createdAt
       }
 
       this.orderHistory.push(order)
@@ -333,7 +332,7 @@ export default {
         window.open(this.DRIED_BLOOD, "_blank")
       }
       if (item == "Epithelial Cells - Buccal Swab Collection Process") {
-        window.open(this.BUCCAL_COLLEVTION, "_blank")
+        window.open(this.BUCCAL_COLLECTION, "_blank")
       }
       if (item == "Fecal Matters - Stool Collection Process") {
         window.open(this.FECAL_COLLECTION, "_blank")

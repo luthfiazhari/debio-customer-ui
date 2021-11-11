@@ -27,7 +27,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": "Covid 19 Saliva Test",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -103,7 +103,7 @@
         "service_info": {
           "image": "mdi-pill",
           "test_result_sample": "",
-          "dna_collection_process": "Blood Cells - Dried Blood Spot Collection Process",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -179,7 +179,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": "Epithelial Cells - Buccal Swab Collection Process",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -255,7 +255,7 @@
         "service_info": {
           "image": "$dgi-skin",
           "test_result_sample": "",
-          "dna_collection_process": "Fecal Matters - Stool Collection Process",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -331,7 +331,7 @@
         "service_info": {
           "image": "mdi-food-apple",
           "test_result_sample": "",
-          "dna_collection_process": "Saliva - Saliva Collection Process",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -378,7 +378,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Paid"
+        "status": "OrderPaid"
       },
       "sort": [
         "1632283908000"
@@ -407,7 +407,7 @@
         "service_info": {
           "image": "$dgi-skin",
           "test_result_sample": "",
-          "dna_collection_process": "Urine - Clean Catch Urine Collection Process",
+          "dna_collection_process": null,
           "prices_by_currency": [
             {
               "total_price": 20,
@@ -634,7 +634,7 @@
           }
         ],
         "seller_id": "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU",
-        "status": "Cancelled"
+        "status": "Paid"
       },
       "sort": [
         "0x0000017bf1cb6560"
