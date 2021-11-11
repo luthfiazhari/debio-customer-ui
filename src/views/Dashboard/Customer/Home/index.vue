@@ -17,6 +17,7 @@
         tiny-card
         with-icon
         width="250"
+        @click="goToRequestTest"
         :block="cardBlock"
       )
         ui-debio-icon(:icon="creditCardIcon" slot="icon" size="34" color="#C400A5" fill)
@@ -27,6 +28,7 @@
         tiny-card
         with-icon
         width="250"
+        @click="goToUploadEmr"
         :block="cardBlock"
       )
         ui-debio-icon(:icon="layersIcon" slot="icon" size="34" color="#C400A5" stroke)
@@ -39,7 +41,7 @@
           v-row
             v-col(cols="9")
               v-row
-                span.topHead Recent Orders
+                span.topHead Recent Payments
               v-row
                 span.botomHead {{ titleWording }}
             v-col(cols="3")
@@ -48,7 +50,7 @@
                 :height="'25px'"
                 color="#5640A5"
                 outlined
-                @click="goToOrderHistory"
+                @click="goToPaymentHistory"
               ) View All
 
         div
@@ -212,8 +214,21 @@ export default {
     },
 
     goToOrderHistory() {
-      // this.$router.push({ name: "customer-test" }) //go to order history page 
+      // this.$router.push({ name: "customer-test" }) //go to order history page (mytest)
     },
+
+    goToUploadEmr() {
+      console.log("ke create emr")
+    },
+
+    goToRequestTest() {
+      console.log("ke request test")
+    },
+
+    goToPaymentHistory() {
+      this.$router.push({ name: "customer-payment-history" }) //go to payment history page
+    },
+
     goToDetail() { //item
       // this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
     },
