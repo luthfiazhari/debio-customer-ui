@@ -120,6 +120,7 @@ export default {
 
   mounted() {
     this.onSearchInput();
+    console.log(this.orderHistory, "order history =======")
   },
 
   async created() {},
@@ -137,6 +138,7 @@ export default {
         created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
         timestamp: parseInt(result._source.created_at)
       }))
+      this.orderHistory = this.orderHistory.filter(order => order.status == "OrderPaid")
     },
 
     setStatusColor(status) {

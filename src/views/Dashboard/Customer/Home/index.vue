@@ -85,7 +85,7 @@
                 size="20"
                 color="#C400A5"
                 stroke
-                @click="goToDetail"
+                @click="goToOrderDetail(item)"
                 )
 
 
@@ -105,7 +105,7 @@
                 height="25px"
                 outlined
                 color="#5640A5"
-                @click="goToOrderHistory"
+                @click="goToMyTest"
               ) View All
 
         div
@@ -137,7 +137,7 @@
                 slot="icon" size="20"
                 color="#C400A5"
                 stroke
-                @click="goToDetail(item)"
+                @click="goToPaymentDetail(item.id)"
                 )
 </template>
 
@@ -200,6 +200,7 @@ export default {
         created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
         timestamp: parseInt(result._source.created_at)
       }))
+      this.orderHistory = this.orderHistory.filter(order => order.status == "OrderPaid")
     },
 
     async getDataTestHistory() {
@@ -213,8 +214,8 @@ export default {
       }))
     },
 
-    goToOrderHistory() {
-      // this.$router.push({ name: "customer-test" }) //go to order history page (mytest)
+    goToMyTest() {
+      this.$router.push({ name: "my-test" }) //go to order history page (mytest)
     },
 
     goToUploadEmr() {
@@ -229,8 +230,13 @@ export default {
       this.$router.push({ name: "customer-payment-history" }) //go to payment history page
     },
 
-    goToDetail() { //item
+    goToOrderDetail(item) { //item
       // this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
+      console.log(item, "<====== item")
+    },
+
+    goToPaymentDetail(item) {
+      console.log(item, "<===== Id")
     },
 
     async checkOrderLenght() {
