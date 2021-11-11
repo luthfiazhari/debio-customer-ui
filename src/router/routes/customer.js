@@ -1,9 +1,9 @@
-// import { checkIsLoggedIn } from "@/common/lib/route-guard"
+import { checkIsLoggedIn } from "@/common/lib/route-guard"
 
 const customerRoutes = [{
   path: "/customer",
   component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Layout"),
-  // beforeEnter: checkIsLoggedIn,
+  beforeEnter: checkIsLoggedIn,
   name: "customer",
   redirect: { name: "customer-dashboard" },
   children: [

@@ -34,9 +34,7 @@
         ui-debio-icon(:icon="layersIcon" slot="icon" size="34" color="#C400A5" stroke)
   .customer-home-__content
     div.body
-      ui-debio-card.leftTable(
-        width="545"
-      )
+      ui-debio-card.leftTable
         div.bodyHeader
           v-row
             v-col(cols="9")
@@ -89,9 +87,7 @@
                 )
 
 
-      ui-debio-card.rightTable(
-        width="545"
-      )
+      ui-debio-card.rightTable
         div.bodyHeader
           v-row
             v-col(cols="9")
@@ -204,7 +200,6 @@ export default {
     },
 
     async getDataTestHistory() {
-      // beda nya apa sama data history, kalo beda dari status ya nanti di filter
       this.testHistory = dataTesting.data.map(result => ({
         ...result._source,
         id: result._id,
@@ -232,11 +227,10 @@ export default {
 
     goToOrderDetail(item) { //item
       this.$router.push({ name: "order-history-detail", params: item}) //go to order history detail page
-      console.log(item, "<====== item")
     },
 
     goToPaymentDetail(item) {
-      console.log(item, "<===== Id")
+      this.$router.push({ name: "customer-payment-details", params: item }) //go to payment detail
     },
 
     async checkOrderLenght() {
@@ -257,9 +251,9 @@ export default {
 
       .body
         margin-top: 25px
-        display: grid
+        display: flex
         width: 100%
-        grid-template-columns: 1fr 1fr
+        flex-wrap: wrap
         gap: 20px
 
       .content
@@ -267,7 +261,15 @@ export default {
 
       .bodyHeader
         margin-left: 15px
-        
+
+      .leftTable
+        width: 545
+        flex: 1
+
+      .rightTable
+        width: 545
+        flex: 1
+
       .topHead
         font-size: 15px
       .botomHead
