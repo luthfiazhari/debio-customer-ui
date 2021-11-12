@@ -9,7 +9,7 @@ export const submitRatingOrder = async (labId, serviceId, orderId, ratingBy, rat
     rating: rating,
     review: review
   });
-  
+
   return result.data;
 }
 
