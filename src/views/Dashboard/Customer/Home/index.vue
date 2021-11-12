@@ -17,7 +17,6 @@
         tiny-card
         with-icon
         width="250"
-        @click="goToRequestTest"
         :block="cardBlock"
       )
         ui-debio-icon(:icon="creditCardIcon" slot="icon" size="34" color="#C400A5" fill)
@@ -28,7 +27,6 @@
         tiny-card
         with-icon
         width="250"
-        @click="goToUploadEmr"
         :block="cardBlock"
       )
         ui-debio-icon(:icon="layersIcon" slot="icon" size="34" color="#C400A5" stroke)
@@ -54,7 +52,7 @@
         div
           DataTable.content(
             :headers="headers"
-            :items="orderHistory"
+            :items="paymentHistory"
             :sortBy="['timestamp']"
             :sort-by="[true]"
             :disableSort="true"
@@ -142,8 +140,22 @@ import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator
 
 import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
-import dataTesting from "./MyTest/dataTesting.json"
+// import dataTesting from "./MyTest/dataTesting.json"
 import Button from "@/common/components/Button"
+import {
+  ordersByCustomer,
+  getOrdersData
+} from "@/common/lib/polkadot-provider/query/orders"
+import {
+  queryDnaTestResultsByOwner,
+  queryDnaTestResults
+} from "@/common/lib/polkadot-provider/query/genetic-testing"
+import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
+import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
+import localStorage from "@/common/lib/local-storage"
+// import { fetchPaymentHistories } from "@/common/lib/orders" //
+import { mapState } from "vuex"
+import { SUCCESS } from "@/common/constants/specimen-status";
 
 export default {
   name: "CustomerHome",
@@ -160,6 +172,8 @@ export default {
     testHistory: [],
     titleWording: "",
     doctorDashboardIllustrator,
+    paymentHistory: [],
+    isLoadingTestResults: false,
     headers: [
       { text: "Service Name", value: "service_info.name",sortable: true },
       { text: "Lab Name", value: "lab_info.name", sortable: true },
@@ -183,42 +197,205 @@ export default {
   },
 
   async created() {
-    await this.getDataOrder()
+    await this.getPaymentHistory()
     await this.checkOrderLenght()
+    await this.getDataOrderHistory()
   },
 
   methods: {
-    async getDataOrder() {
-      this.orderHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        timestamp: parseInt(result._source.created_at)
-      }))
-      this.orderHistory = this.orderHistory.filter(order => order.status == "OrderPaid")
+    async getPaymentHistory() {
+      this.isLoadingTestResults = true;
+      try {
+        this.testHistory = [];
+        let maxResults = 5;
+        const address = this.wallet.address
+        // Get specimens
+        const specimens = await queryDnaTestResultsByOwner(this.api, address)
+        console.log(specimens, "<==== specimens")
+        if (specimens != null) {
+          specimens.reverse();
+          if (specimens.length < maxResults) {
+            maxResults = specimens.length;
+          }
+          for (let i = 0; i < maxResults; i++) {
+            const dnaTestResults = await queryDnaTestResults(
+              this.api,
+              specimens[i]
+            );
+            if (dnaTestResults != null) {
+              const detaillab = await queryLabsById(
+                this.api,
+                dnaTestResults.lab_id
+              );
+              const detailOrder = await getOrdersData(
+                this.api,
+                dnaTestResults.order_id
+              );
+              const detailService = await queryServicesById(
+                this.api,
+                detailOrder.service_id
+              );
+              this.preparePaymentHistory(dnaTestResults, detaillab, detailService);
+            }
+          }
+        }
+        this.isLoadingTestResults = false;
+      } catch (err) {
+        console.log(err);
+        this.isLoadingTestResults = false;
+      }
     },
 
-    async getDataTestHistory() {
-      this.testHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        timestamp: parseInt(result._source.created_at)
-      }))
+    async getDataOrderHistory() {
+      try {
+        const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, address)
+
+        for (let i = 0; i < listOrderId.length; i++) {
+          const detailOrder = await getOrdersData(this.api, listOrderId[i])
+          const detaillab = await queryLabsById(this.api, detailOrder.seller_id)
+          const detailService = await queryServicesById(this.api, detailOrder.service_id);
+          this.prepareOrderData(detailOrder, detaillab, detailService)
+        }
+
+        this.orderHistory.sort(
+          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
+        )
+  
+        const status = localStorage.getLocalStorageByName("lastOrderStatus")
+        if (status) this.orderHistory[0].status = status
+        
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    prepareOrderData(detailOrder, detaillab, detailService) {
+      const title = detailService.info.name
+      const description = detailService.info.description
+      const serviceImage = detailService.info.image
+      const category = detailService.info.category
+      const testResultSample = detailService.info.testResultSample 
+      const pricesByCurrency = detailService.info.pricesByCurrency 
+      const expectedDuration = detailService.info.expectedDuration 
+      const serviceId = detailService.id 
+      const dnaCollectionProcess = detailService.info.dnaCollectionProcess 
+      const serviceInfo = { 
+        name: title,
+        description: description,
+        image: serviceImage,
+        category: category,
+        testResultSample: testResultSample,
+        pricesByCurrency: pricesByCurrency,
+        expectedDuration: expectedDuration,
+        dnaCollectionProcess: dnaCollectionProcess
+      }
+
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey 
+      const labInfo = { 
+        name: labName,
+        address: address,
+        profileImage: labImage
+      }
+
+      let icon = "mdi-needle";
+      if (detailService.info.image != null) {
+        icon = detailService.info.image;
+      }
+
+      const number = detailOrder.id
+      const dateSet = new Date(
+        parseInt(detailOrder.createdAt.replace(/,/g, ""))
+      )
+      const dateUpdate = new Date(
+        parseInt(detailOrder.updatedAt.replace(/,/g, ""))
+      )
+      const timestamp = dateSet.getTime().toString();
+      const orderDate = dateSet.toLocaleString("en-US", {
+        weekday: "short", // long, short, narrow
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long", // numeric, 2-digit, long, short, narrow
+        hour: "numeric", // numeric, 2-digit
+        minute: "numeric"
+      })
+      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const createdAt = dateSet.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      });
+      const status = detailOrder.status
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
+      const order = {
+        icon,
+        number,
+        timestamp,
+        status,
+        dnaSampleTrackingId,
+        orderDate,
+        serviceId,
+        serviceInfo,
+        labId,
+        labInfo,
+        updatedAt,
+        createdAt
+      }
+
+      this.orderHistory.push(order)
+    },
+
+    preparePaymentHistory(dnaTestResults, detaillab, detailService) {
+      const title = detailService.info.name;
+
+      const labName = detaillab.info.name;
+      let icon = "mdi-needle";
+      if (detailService.info.image != null) {
+        icon = detailService.info.image;
+      }
+
+      let dateSet = new Date();
+      let timestamp = dateSet.getTime().toString();
+      if (dnaTestResults.updated_at != null) {
+        dateSet = new Date(
+          parseInt(dnaTestResults.updated_at.replace(/,/g, ""))
+        );
+        timestamp = dateSet.getTime().toString();
+      }
+      const orderDate = dateSet.toLocaleString("en-US", {
+        weekday: "short", // long, short, narrow
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long", // numeric, 2-digit, long, short, narrow
+        hour: "numeric", // numeric, 2-digit
+        minute: "numeric"
+      });
+
+      const number = dnaTestResults.tracking_id;
+      const status = SUCCESS;
+
+      const order = {
+        icon,
+        title,
+        number,
+        labName,
+        timestamp,
+        status,
+        orderDate
+      };
+
+      this.testHistory.push(order);
     },
 
     goToMyTest() {
       this.$router.push({ name: "my-test" }) //go to order history page (mytest)
-    },
-
-    goToUploadEmr() {
-      console.log("ke create emr")
-    },
-
-    goToRequestTest() {
-      console.log("ke request test")
     },
 
     goToPaymentHistory() {
@@ -240,6 +417,15 @@ export default {
       }
       this.titleWording = "Quick Actions to view your recent orders"
     }
+  },
+
+  computed: {
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      lastEventData: (state) => state.substrate.lastEventData
+    })
   }
 }
 </script>
