@@ -120,7 +120,6 @@ export default {
 
   mounted() {
     this.onSearchInput();
-    console.log(this.orderHistory, "order history =======")
   },
 
   async created() {},
@@ -133,10 +132,6 @@ export default {
     async onSearchInput() {
       this.orderHistory = dataTesting.data.map(result => ({
         ...result._source,
-        // id: result._id,
-        // updated_at: new Date(parseInt(result._source.updated_at)).toLocaleDateString(),
-        // created_at: new Date(parseInt(result._source.created_at)).toLocaleDateString(),
-        // timestamp: parseInt(result._source.created_at)
         id: result._id,
         updatedAt: new Date(parseInt(result._source.updatedAt)).toLocaleDateString(),
         createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
