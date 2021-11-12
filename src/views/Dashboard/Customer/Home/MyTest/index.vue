@@ -172,7 +172,6 @@ export default {
     },
 
     async onSearchInput() {
-      console.log("masuk mounted")
       this.orderHistory = dataTesting.data.map(result => ({
         ...result._source,
         id: result._id,
@@ -225,10 +224,6 @@ export default {
     },
 
     prepareOrderData(detailOrder, detaillab, detailService) {
-      console.log(detailOrder, "detail order")
-      console.log(detaillab, "detail lab")
-      console.log(detailService, "detail service")
-      
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
