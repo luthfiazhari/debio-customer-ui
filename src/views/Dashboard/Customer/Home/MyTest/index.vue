@@ -162,7 +162,6 @@ export default {
 
   mounted() {
     this.getOrderHistory()
-    // console.log(this.orderHistory, "<=== order history saat mounted")
     // this.onSearchInput()
   },
 
@@ -200,7 +199,9 @@ export default {
       try {
         this.isLoadingOrderHistory = true
         const address = this.wallet.address
+        console.log(address, "address")
         const listOrderId = await ordersByCustomer(this.api, address)
+        console.log(listOrderId, "list order id ==========")
   
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
@@ -311,15 +312,10 @@ export default {
     },
 
     goToStakeData() {
-      console.log("stake data")
-      console.log(this.isBounty, " before")
       this.isBounty = true
-      console.log(this.isBounty, " afteer")
     },
 
     goToInstruction(item) {
-      console.log("insturction")
-      console.log(item)
       if (item == "Covid 19 Saliva Test") {
         window.open(this.COVID_19, "_blank")
       }

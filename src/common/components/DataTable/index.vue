@@ -68,7 +68,7 @@ export default {
     loading: { type: Boolean},
     expand: { type: Boolean},
     customFilter: {type: [String, Boolean], default: false},
-    loadingText: {type: String, default: "Please wait, loading..."},
+    loadingText: {type: [String, Function], default: "Please wait, loading..."},
     disableSort: {type: Boolean, default: false},
     showFooter: {type: Boolean, default: true}
   },
