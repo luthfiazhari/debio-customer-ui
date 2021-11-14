@@ -178,6 +178,7 @@ export default {
         createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
         timestamp: parseInt(result._source.createdAt)
       }))
+      this.orderHistory = this.orderHistory.filter(order => order.status == "OrderPaid")
     },
 
     setStatusColor(status) { //change color for each order status

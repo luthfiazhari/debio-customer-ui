@@ -52,11 +52,19 @@
               template
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'notification'")
                   .navbar__notification
-                    //- TODO: Change this to real notification lists when available
-                    .notification-item(role="button" v-for="t in 20")
+                    .notification-item.text-center(v-if="!notifications.length") No notifications yet
+                    router-link.notification-item(
+                      role="button"
+                      v-for="(notif, idx) in notifications"
+                      :key="idx"
+                      :to="{ name: notif.route, params: notif.params }"
+                    )
                       .notification-item__wrapper
-                        .notification-item__title(aria-label="Congrats! You got 5 DBIO!") Congrats! You got 5 DBIO!
-                        .notification-item__description(aria-label="Congrats! You got 5 DBIO!") 2 hour ago
+                        .notification-item__title(:aria-label="notif.message") {{ notif.message }}
+                        .notification-item__description(
+                          :aria-label="compareDate(new Date(), new Date(parseInt(notif.timestamp)))"
+                        )
+                          | {{ compareDate(new Date(), new Date(parseInt(notif.timestamp))) }}
 
                 section.navbar__dropdown-content(v-if="getActiveMenu.type === 'settings'")
                   .navbar__settings
@@ -90,6 +98,7 @@
 </template>
 
 <script>
+import { compareDate } from "@/common/lib/utils"
 import { mapActions, mapMutations, mapState } from "vuex"
 
 import {
@@ -119,7 +128,13 @@ export default {
 
   components: { WalletBinding },
 
+  props: {
+    notifications: { type: Array, default: () => [] }
+  },
+
   data: () => ({
+    compareDate,
+
     bellIcon,
     settingIcon,
     userIcon,
@@ -307,6 +322,7 @@ export default {
   .navbar
     padding: 3rem
     width: 100%
+    z-index: 100
 
     &__triangle
       height: 1.25rem
@@ -417,6 +433,9 @@ export default {
         background: #D3C9D1
 
   .notification-item
+    color: #000000 !important
+    text-decoration: none
+
     &__wrapper
       position: relative
       padding: 0.688rem 1.438rem

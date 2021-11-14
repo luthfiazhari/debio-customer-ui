@@ -1,5 +1,26 @@
 <template lang="pug">
 .customer-emr
+  ui-debio-modal(
+    :show="showModal"
+    :show-title="false"
+    disable-dismiss
+    @onClose="showModal = false"
+  )
+    ui-debio-icon(:icon="alertIcon" stroke size="80")
+    h1 Delete
+    p.modal-password__subtitle(v-if="selectedFile") Are you sure you want to delete {{ selectedFile.title }} EMR files?
+
+    .modal-password__cta.d-flex(slot="cta")
+      Button(
+        outlined
+        color="secondary"
+        @click="showModal = false; error = null"
+      ) Cancel
+
+      Button(
+        color="secondary"
+        @click="onDelete"
+      ) Delete
   ui-debio-banner(
     title="My EMR"
     subtitle="Here, you can upload a collection of your Electronic Medical Records (medical history, diagnoses, medications, treatment plans, immunization dates, allergies, radiology images, and laboratory)."
@@ -14,11 +35,21 @@
     :loading="isLoading"
     :items="emrDocuments"
   )
+    template(v-slot:[`item.documentTitle`]="{ item }")
+      .d-flex.flex-column
+        span(v-for="file in item.files") {{ file.title }}
+
+    template(v-slot:[`item.documentDescription`]="{ item }")
+      .d-flex.flex-column
+        span(v-for="file in item.files") {{ file.description }}
+
+    template(v-slot:[`item.createdAt`]="{ item }")
+      span {{ new Date(item.createdAt).toLocaleDateString() }}
+
     template(v-slot:[`item.actions`]="{ item }")
       .customer-emr__actions
-        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item.data.id)")
-        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="onDelete(item)")
-        ui-debio-icon(:icon="downloadIcon" size="16" role="button" stroke @click="onDownload(item)")
+        ui-debio-icon(:icon="eyeIcon" size="16" role="button" stroke @click="onDetails(item)")
+        ui-debio-icon(:icon="trashIcon" size="16" role="button" stroke @click="handleOpenModalDelete(item)")
 </template>
 
 <script>
@@ -27,26 +58,32 @@ import {
   layersIcon,
   analiticIllustration,
   eyeIcon,
+  alertIcon,
   trashIcon,
   downloadIcon
 } from "@/common/icons"
+import {
+  deregisterElectronicMedicalRecord
+} from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 
 import {
   queryGetEMRList,
-  queryElectronicMedicalRecordInfoById
+  queryElectronicMedicalRecordFileById,
+  queryElectronicMedicalRecordById
 } from "@/common/lib/polkadot-provider/query/electronic-medical-record"
-import { removeElectronicMedicalRecordInfo } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
-import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
-import { hexToU8a } from "@polkadot/util"
+import CryptoJS from "crypto-js"
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
 
 import DataTable from "@/common/components/DataTable"
+import Button from "@/common/components/Button"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 
 export default {
   name: "CustomerEmr",
   mixins: [metamaskServiceHandler],
 
-  components: { DataTable },
+  components: { DataTable, Button },
 
   data: () => ({
     layersIcon,
@@ -54,13 +91,17 @@ export default {
     eyeIcon,
     trashIcon,
     downloadIcon,
+    alertIcon,
 
     cardBlock: false,
-    password: "12345678",
+    showModal: false,
+    selectedFile: null,
+    publicKey: null,
+    secretKey: null,
     headers: [
       {
         text: "EMR Title",
-        value: "emrTitle",
+        value: "title",
         sortable: true
       },
       {
@@ -70,17 +111,17 @@ export default {
       },
       {
         text: "Document Title",
-        value: "title",
+        value: "documentTitle",
         sortable: true
       },
       {
         text: "Description",
-        value: "description",
+        value: "documentDescription",
         sortable: true
       },
       {
         text: "Upload Date",
-        value: "date",
+        value: "createdAt",
         align: "center",
         sortable: true
       },
@@ -88,16 +129,6 @@ export default {
         text: "Action",
         value: "actions",
         align: "center"
-      }
-    ],
-
-    items: [
-      {
-        title: "Test",
-        category: "Test",
-        documentTitle: "Test",
-        documentDescription: "Test",
-        upload: "Test"
       }
     ],
     emrDocuments: []
@@ -110,7 +141,11 @@ export default {
       mnemonicData: (state) => state.substrate.mnemonicData,
       lastEventData: (state) => state.substrate.lastEventData,
       loadingData: (state) => state.auth.loadingData
-    })
+    }),
+
+    passwordErrorMessages() {
+      return this.errorMessages || this.error
+    }
   },
 
   watch: {
@@ -123,6 +158,10 @@ export default {
           }
         }
       }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialDataKey()
     }
   },
 
@@ -134,29 +173,36 @@ export default {
   },
 
   created() {
+    if (this.mnemonicData) this.initialDataKey()
     this.getDocumentsHistory()
   },
 
   methods: {
+    initialDataKey() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     async getDocumentsHistory() {
-      this.emrDocuments = []
       await this.metamaskDispatchAction(this.getEMRHistory)
     },
 
     async getEMRHistory() {
       const dataEMR = await this.metamaskDispatchAction(queryGetEMRList, this.api, this.wallet.address)
 
-      if (dataEMR != null) {
-        const listEMR = dataEMR.info.reduce((filtered, current) => {
+      if (dataEMR !== null) {
+        const listEMR = dataEMR.reduce((filtered, current) => {
           if (filtered.every(v => v !== current)) filtered.push(current)
 
           return filtered
         }, [])
 
         if (listEMR.length > 0) {
-          listEMR.reverse()
+          listEMR.reverse() // TODO: BAD way, Need reverse from backend
           for (let i = 0; i < listEMR.length; i++) {
-            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordInfoById,
+            const emrDetail = await this.metamaskDispatchAction(queryElectronicMedicalRecordById,
               this.api,
               listEMR[i]
             )
@@ -173,58 +219,57 @@ export default {
       }
     },
 
-    prepareEMRData(dataEMR) {
-      const title = dataEMR.title
-      const description = dataEMR.description
-      var d = new Date(parseInt(dataEMR.uploaded_at.replace(/,/g, "")))
-      const timestamp = d.getTime().toString()
-      const data = dataEMR
-      const date = d.toLocaleString("en-US", {
-        day: "numeric", // numeric, 2-digit
-        year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
-      })
+
+
+    async prepareEMRData(dataEMR) {
+      let files = []
+
+      for (let i = 0; i < dataEMR.files?.length; i++) {
+        const file = await this.metamaskDispatchAction(queryElectronicMedicalRecordFileById,
+          this.api,
+          dataEMR.files[i]
+        )
+
+        files.push({
+          ...file,
+          createdAt: new Date(+file.uploadedAt.replaceAll(",", "")),
+          recordLink: file.recordLink.replace("https://ipfs.io/ipfs/", "")})
+      }
 
       const order = {
-        title,
-        description,
-        data,
-        date,
-        timestamp,
-        type: "emr"
+        id: dataEMR.id,
+        title: dataEMR.title,
+        category: dataEMR.category,
+        createdAt: new Date(),
+        files: files?.slice(0, 3)
       }
 
       this.emrDocuments.push(order)
     },
 
-    onDetails(id) {
-      this.$router.push({ name: "customer-emr-details", params: { id }})
+    onDetails(emr) {
+      this.$router.push({ name: "customer-emr-details", params: { id: emr.id, document: emr }})
     },
 
-    async onDelete(item) {
-      this.wallet.decodePkcs8(this.password)
-      await this.metamaskDispatchAction(removeElectronicMedicalRecordInfo,
-        this.api,
-        this.wallet,
-        item.data.id
-      )
+    handleOpenModalDelete(item) {
+      this.selectedFile = item
+      this.showModal = true
     },
 
-    async onDownload(item) {
-      if (item.type !== "emr") return
+    async onDelete() {
+      const { id } = this.selectedFile
 
-      const publicKey = hexToU8a(this.mnemonicData.publicKey)
-      const privateKey = hexToU8a(this.mnemonicData.privateKey)
-      const baseUrl = "https://ipfs.io/ipfs/"
-      const path = item.data.record_link.replace(baseUrl, "")
+      try {
+        const pair = {
+          secretKey: this.secretKey,
+          publicKey: this.publicKey
+        }
 
-      await this.metamaskDispatchAction(downloadDecryptedFromIPFS,
-        path,
-        privateKey,
-        publicKey,
-        item.data.id + ".pdf",
-        "application/pdf"
-      )
+        await this.metamaskDispatchAction(deregisterElectronicMedicalRecord, this.api, pair, id)
+        this.showModal = false
+      } catch (e) {
+        this.error = e?.message
+      }
     }
   }
 }
@@ -239,6 +284,7 @@ export default {
     &__actions
       display: flex
       align-items: center
+      justify-content: center
       gap: 20px
 
     &::v-deep
@@ -247,4 +293,15 @@ export default {
       .banner-illustration
         position: absolute
         bottom: -100px
+
+      .ui-debio-modal__card
+        gap: 20px
+
+    .modal-password
+      &__subtitle
+        max-width: 251px
+        text-align: center
+
+      &__cta
+        gap: 20px
 </style>
