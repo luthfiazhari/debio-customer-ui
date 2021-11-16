@@ -197,7 +197,6 @@ export default {
     },
 
     async getOrderHistory() {//this for get order from substrate
-      console.log("masuk ke get order history")//check mounted function
       try {
         this.isLoadingOrderHistory = true
         const address = this.wallet.address
