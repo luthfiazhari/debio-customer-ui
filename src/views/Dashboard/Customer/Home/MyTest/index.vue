@@ -204,7 +204,6 @@ export default {
         console.log(listOrderId, "<========= listOrderId")
   
         for (let i = 0; i < listOrderId.length; i++) {
-          console.log(listOrderId[i], "di looping ke ", i)
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
           const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
           const detailService = await queryServicesById(this.api, detailOrder.serviceId)
