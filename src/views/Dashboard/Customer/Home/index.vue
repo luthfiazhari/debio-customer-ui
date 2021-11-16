@@ -208,9 +208,11 @@ export default {
       try {
         this.testHistory = [];
         let maxResults = 5;
+        const dummyAddress = "5GH6Kqaz3ZewWvDCZPkTnsRezUf2Q7zZ5GmC4XFLNqKdVwA7"
         const address = this.wallet.address
+        console.log(address)
         // Get specimens
-        const specimens = await queryDnaTestResultsByOwner(this.api, address)
+        const specimens = await queryDnaTestResultsByOwner(this.api, dummyAddress)
         console.log(specimens, "<==== specimens")
         if (specimens != null) {
           specimens.reverse();
@@ -225,15 +227,15 @@ export default {
             if (dnaTestResults != null) {
               const detaillab = await queryLabsById(
                 this.api,
-                dnaTestResults.lab_id
+                dnaTestResults.labId
               );
               const detailOrder = await getOrdersData(
                 this.api,
-                dnaTestResults.order_id
+                dnaTestResults.orderId
               );
               const detailService = await queryServicesById(
                 this.api,
-                detailOrder.service_id
+                detailOrder.serviceId
               );
               this.preparePaymentHistory(dnaTestResults, detaillab, detailService);
             }
@@ -253,8 +255,8 @@ export default {
 
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.seller_id)
-          const detailService = await queryServicesById(this.api, detailOrder.service_id);
+          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
+          const detailService = await queryServicesById(this.api, detailOrder.serviceId);
           this.prepareOrderData(detailOrder, detaillab, detailService)
         }
 
@@ -363,9 +365,9 @@ export default {
 
       let dateSet = new Date();
       let timestamp = dateSet.getTime().toString();
-      if (dnaTestResults.updated_at != null) {
+      if (dnaTestResults.updatedAt != null) {
         dateSet = new Date(
-          parseInt(dnaTestResults.updated_at.replace(/,/g, ""))
+          parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
         );
         timestamp = dateSet.getTime().toString();
       }
@@ -378,7 +380,7 @@ export default {
         minute: "numeric"
       });
 
-      const number = dnaTestResults.tracking_id;
+      const number = dnaTestResults.trackingId;
       const status = SUCCESS;
 
       const order = {
