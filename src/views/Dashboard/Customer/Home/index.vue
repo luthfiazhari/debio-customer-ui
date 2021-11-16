@@ -59,18 +59,18 @@
             :showFooter="false"
 
           )
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
             template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
 
@@ -111,18 +111,18 @@
             :showFooter="false"
           )
 
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200/300'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
 
             template(v-slot:[`item.actions`]="{item}")
@@ -175,9 +175,9 @@ export default {
     paymentHistory: [],
     isLoadingTestResults: false,
     headers: [
-      { text: "Service Name", value: "service_info.name",sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
-      { text: "Date", value: "created_at", sortable: true },
+      { text: "Service Name", value: "serviceInfo.name",sortable: true },
+      { text: "Lab Name", value: "labInfo.name", sortable: true },
+      { text: "Date", value: "createdAt", sortable: true },
       { text: "Status", value: "status", sortable: true },
       {
         text: "Actions",
@@ -225,15 +225,15 @@ export default {
             if (dnaTestResults != null) {
               const detaillab = await queryLabsById(
                 this.api,
-                dnaTestResults.lab_id
+                dnaTestResults.labId
               );
               const detailOrder = await getOrdersData(
                 this.api,
-                dnaTestResults.order_id
+                dnaTestResults.orderId
               );
               const detailService = await queryServicesById(
                 this.api,
-                detailOrder.service_id
+                detailOrder.serviceId
               );
               this.preparePaymentHistory(dnaTestResults, detaillab, detailService);
             }
@@ -253,8 +253,8 @@ export default {
 
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.seller_id)
-          const detailService = await queryServicesById(this.api, detailOrder.service_id);
+          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
+          const detailService = await queryServicesById(this.api, detailOrder.serviceId);
           this.prepareOrderData(detailOrder, detaillab, detailService)
         }
 
@@ -363,9 +363,9 @@ export default {
 
       let dateSet = new Date();
       let timestamp = dateSet.getTime().toString();
-      if (dnaTestResults.updated_at != null) {
+      if (dnaTestResults.updatedAt != null) {
         dateSet = new Date(
-          parseInt(dnaTestResults.updated_at.replace(/,/g, ""))
+          parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
         );
         timestamp = dateSet.getTime().toString();
       }
@@ -378,7 +378,7 @@ export default {
         minute: "numeric"
       });
 
-      const number = dnaTestResults.tracking_id;
+      const number = dnaTestResults.trackingId;
       const status = SUCCESS;
 
       const order = {
