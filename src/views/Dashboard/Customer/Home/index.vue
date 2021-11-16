@@ -140,7 +140,6 @@ import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator
 
 import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
-// import dataTesting from "./MyTest/dataTesting.json"
 import Button from "@/common/components/Button"
 import {
   ordersByCustomer,
@@ -153,7 +152,6 @@ import {
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
-// import { fetchPaymentHistories } from "@/common/lib/orders" //
 import { mapState } from "vuex"
 import { SUCCESS } from "@/common/constants/specimen-status";
 
@@ -197,13 +195,13 @@ export default {
   },
 
   async created() {
-    await this.getPaymentHistory()
+    await this.getTestHistoryData()
     await this.checkOrderLenght()
     await this.getDataOrderHistory()
   },
 
   methods: {
-    async getPaymentHistory() {
+    async getTestHistoryData() {
       this.isLoadingTestResults = true;
       try {
         this.testHistory = [];
@@ -211,7 +209,6 @@ export default {
         const address = this.wallet.address
         // Get specimens
         const specimens = await queryDnaTestResultsByOwner(this.api, address)
-        console.log(specimens, "<==== specimens")
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -249,9 +246,12 @@ export default {
     async getDataOrderHistory() {
       try {
         const address = this.wallet.address
+        let maxResults = 5;
         const listOrderId = await ordersByCustomer(this.api, address)
-
-        for (let i = 0; i < listOrderId.length; i++) {
+        if (listOrderId.length < maxResults) {
+          maxResults = listOrderId.length
+        }
+        for (let i = 0; i < maxResults; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
           const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
           const detailService = await queryServicesById(this.api, detailOrder.serviceId);
@@ -353,22 +353,46 @@ export default {
     },
 
     preparePaymentHistory(dnaTestResults, detaillab, detailService) {
-      const title = detailService.info.name;
-
-      const labName = detaillab.info.name;
+      const title = detailService.info.name
+      const description = detailService.info.description
+      const serviceImage = detailService.info.image
+      const category = detailService.info.category
+      const testResultSample = detailService.info.testResultSample 
+      const pricesByCurrency = detailService.info.pricesByCurrency 
+      const expectedDuration = detailService.info.expectedDuration 
+      const serviceId = detailService.id 
+      const dnaCollectionProcess = detailService.info.dnaCollectionProcess 
+      const serviceInfo = { 
+        name: title,
+        description: description,
+        image: serviceImage,
+        category: category,
+        testResultSample: testResultSample,
+        pricesByCurrency: pricesByCurrency,
+        expectedDuration: expectedDuration,
+        dnaCollectionProcess: dnaCollectionProcess
+      }
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey 
+      const labInfo = { 
+        name: labName,
+        address: address,
+        profileImage: labImage
+      }
       let icon = "mdi-needle";
       if (detailService.info.image != null) {
         icon = detailService.info.image;
       }
 
-      let dateSet = new Date();
-      let timestamp = dateSet.getTime().toString();
-      if (dnaTestResults.updatedAt != null) {
-        dateSet = new Date(
-          parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
-        );
-        timestamp = dateSet.getTime().toString();
-      }
+      const dateSet = new Date(
+        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
+      )
+      const dateUpdate = new Date(
+        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
+      )
+      const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
@@ -378,17 +402,32 @@ export default {
         minute: "numeric"
       });
 
+      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
+      const createdAt = dateSet.toLocaleString("en-US", { 
+        day: "numeric", // numeric, 2-digit
+        year: "numeric", // numeric, 2-digit
+        month: "long" // numeric, 2-digit, long, short, narrow
+      })
       const number = dnaTestResults.trackingId;
       const status = SUCCESS;
 
       const order = {
         icon,
-        title,
         number,
-        labName,
         timestamp,
         status,
-        orderDate
+        orderDate,
+        serviceId,
+        serviceInfo,
+        labId,
+        labInfo,
+        createdAt,
+        updatedAt,
+        labName
       };
 
       this.testHistory.push(order);
