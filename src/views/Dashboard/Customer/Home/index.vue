@@ -59,18 +59,18 @@
             :showFooter="false"
 
           )
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
             template(class="status" v-slot:[`item.status`]="{item}") {{ item.status }}
 
@@ -111,18 +111,18 @@
             :showFooter="false"
           )
 
-            template(class="status" v-slot:[`item.service_info.name`]="{item}")
+            template(class="status" v-slot:[`item.serviceInfo.name`]="{item}")
               div(class="d-flex align-center")
                 ui-debio-avatar.serviceImage(
-                  :src="'https://picsum.photos/200/300'"
+                  :src="item.serviceInfo.image"
                   size="41"
                   rounded
                 )
                 div(class="fluid")
                   div
-                    span {{ item.service_info.name }}
+                    span {{ item.serviceInfo.name }}
                   div
-                    span {{ item.dna_sample_tracking_id}}
+                    span {{ item.dnaSampleTrackingId}}
 
 
             template(v-slot:[`item.actions`]="{item}")
@@ -140,7 +140,6 @@ import { creditCardIcon, layersIcon, labIllustration, doctorDashboardIllustrator
 
 import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
-// import dataTesting from "./MyTest/dataTesting.json"
 import Button from "@/common/components/Button"
 import {
   ordersByCustomer,
@@ -153,7 +152,6 @@ import {
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
 import localStorage from "@/common/lib/local-storage"
-// import { fetchPaymentHistories } from "@/common/lib/orders" //
 import { mapState } from "vuex"
 import { SUCCESS } from "@/common/constants/specimen-status";
 
@@ -175,9 +173,9 @@ export default {
     paymentHistory: [],
     isLoadingTestResults: false,
     headers: [
-      { text: "Service Name", value: "service_info.name",sortable: true },
-      { text: "Lab Name", value: "lab_info.name", sortable: true },
-      { text: "Date", value: "created_at", sortable: true },
+      { text: "Service Name", value: "serviceInfo.name",sortable: true },
+      { text: "Lab Name", value: "labInfo.name", sortable: true },
+      { text: "Date", value: "createdAt", sortable: true },
       { text: "Status", value: "status", sortable: true },
       {
         text: "Actions",
