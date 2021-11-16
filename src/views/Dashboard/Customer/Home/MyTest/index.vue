@@ -201,26 +201,13 @@ export default {
       try {
         this.isLoadingOrderHistory = true
         const address = this.wallet.address
-        const dummyAddress = "5GH6Kqaz3ZewWvDCZPkTnsRezUf2Q7zZ5GmC4XFLNqKdVwA7"
-        console.log(address, "address")
-        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
-        console.log(listOrderId, "list order id ==========")
+        const listOrderId = await ordersByCustomer(this.api, address)
   
         for (let i = 0; i < listOrderId.length; i++) {
-        // for (let i = 0; i < 1; i++) {
-          console.log("masuk ke loop")
-          const orderId = "0xbff0b570f3ac2931c58c69059b8a857f905a216cf63ad3493e0b473e11522029"
-          const detailOrder = await getOrdersData(this.api, orderId)// fucntion gak jalan 
-          console.log("after detailOrder")
-          // const sellerId = "5ESGhRuAhECXu96Pz9L8pwEEd1AeVhStXX67TWE1zHRuvJNU"
-          // const serviceId = "0xe88f0531fea1654b6a24197ec1025fd7217bb8b19d619bd488105504ec244df8"
-          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)//funciton ga jalan
-          const detailService = await queryServicesById(this.api, detailOrder.serviceId) //fucntion ga jalan
-          // if (detailOrder.status == "Paid" || detailOrder.status == "Fulfilled") {
-          //   this.prepareOrderData(detailOrder, detaillab, detailService)
-          // }
-          console.log(detaillab, "lab")
-          console.log(detailService, "service")
+          const detailOrder = await getOrdersData(this.api, listOrderId[i])
+          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
+          const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+          this.prepareOrderData(detailOrder, detaillab, detailService)
         }
         
         this.orderHistory.sort(
@@ -228,7 +215,6 @@ export default {
         )
   
         const status = localStorage.getLocalStorageByName("lastOrderStatus")
-        console.log(status)
         if (status) this.orderHistory[0].status = status
         
       } catch (error) {
@@ -239,10 +225,6 @@ export default {
     },
 
     prepareOrderData(detailOrder, detaillab, detailService) {
-      console.log(detailOrder, "<===== detail ordeer")
-      console.log(detaillab, "<===== detail lab")
-      console.log(detailService, "<===== detail service")
-
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
