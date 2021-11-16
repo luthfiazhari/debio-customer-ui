@@ -201,7 +201,6 @@ export default {
         this.isLoadingOrderHistory = true
         const address = this.wallet.address
         const listOrderId = await ordersByCustomer(this.api, address)
-        console.log(listOrderId, "<========= listOrderId")
   
         for (let i = 0; i < listOrderId.length; i++) {
           const detailOrder = await getOrdersData(this.api, listOrderId[i])
