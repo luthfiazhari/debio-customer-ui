@@ -199,10 +199,8 @@ export default {
     async getOrderHistory() {//this for get order from substrate
       try {
         this.isLoadingOrderHistory = true
-        const dummyAddress = "5GH6Kqaz3ZewWvDCZPkTnsRezUf2Q7zZ5GmC4XFLNqKdVwA7"
-        // const address = this.wallet.address
-        // const listOrderId = await ordersByCustomer(this.api, address)
-        const listOrderId = await ordersByCustomer(this.api, dummyAddress)
+        const address = this.wallet.address
+        const listOrderId = await ordersByCustomer(this.api, address)
         console.log(listOrderId, "<========= listOrderId")
   
         for (let i = 0; i < listOrderId.length; i++) {
