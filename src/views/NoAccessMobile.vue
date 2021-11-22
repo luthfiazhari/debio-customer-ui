@@ -17,13 +17,7 @@ export default {
 
   components: { Button },
 
-  data: () => ({ debioFullIcon }),
-
-  methods: {
-    handleVisitDebio() {
-      
-    }
-  }
+  data: () => ({ debioFullIcon })
 }
 </script>
 
@@ -42,6 +36,11 @@ export default {
 
     &__title
       font-size: 0.875rem
+
+    &__title,
+    &__subtitle,
+    &__text
+      text-align: center
 
     &__subtitle,
     &__text
