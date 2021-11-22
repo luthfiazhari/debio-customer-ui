@@ -45,6 +45,7 @@ import weightLifterIcon from "./weightLifter"
 import fileSearchIcon from "./fileSearch"
 import hairIcon from "./hair"
 import familyTreeIcon from "./familyTree"
+import debioFullIcon from "./debioFull"
 import dnaIcon from "./dna"
 import foodAppleIcon from "./foodApple"
 import pillIcon from "./pill"
@@ -105,6 +106,7 @@ export {
   fileSearchIcon,
   hairIcon,
   familyTreeIcon,
+  debioFullIcon,
   dnaIcon,
   foodAppleIcon,
   pillIcon,
