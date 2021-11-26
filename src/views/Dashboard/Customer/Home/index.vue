@@ -174,12 +174,7 @@ export default {
     labIllustration,
     eyeIcon,
     cardBlock: false,
-<<<<<<< HEAD
     testResult: [],
-=======
-    testResult: [],// orderHistory
-    // testResult: [],
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
     titlePaymentWording: "",
     titleTestWording: "",
     doctorDashboardIllustrator,
@@ -210,11 +205,6 @@ export default {
   async created() {
     await this.getTestResultsData()
     await this.getDataPaymentHistory()
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
     await this.checkPaymentLength()
     await this.checkTestLength()
   },
@@ -225,13 +215,7 @@ export default {
       try {
         this.testResult = [];
         let maxResults = 5;
-<<<<<<< HEAD
         const address = this.wallet.address // use this for actual data
-=======
-        // const address = this.wallet.address // use this for actual data
-        
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25" // this for testing only
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
 
         // Get specimens
         const specimens = await queryDnaTestResultsByOwner(this.api, dummyAddress)// change to address
@@ -259,19 +243,11 @@ export default {
     },
 
     async getDataPaymentHistory() {
-<<<<<<< HEAD
-=======
-      console.log("get order data history")
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
       try {
         // const address = this.wallet.address
         const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25" // this for testing only
         let maxResults = 5;
-<<<<<<< HEAD
         let listOrderId = await ordersByCustomer(this.api, address)
-=======
-        let listOrderId = await ordersByCustomer(this.api, dummyAddress)
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
         if (listOrderId != null) {
           listOrderId = listOrderId.reverse()
         }
@@ -380,13 +356,6 @@ export default {
       this.paymentHistory.push(order)
     },
 
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
     prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample) {
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
@@ -491,7 +460,6 @@ export default {
     async checkPaymentLength() {
       if (!this.paymentHistory.length) {
         this.titlePaymentWording = "You dont have made any order."
-<<<<<<< HEAD
         return
       }
       this.titlePaymentWording = "Your recent payments"
@@ -502,18 +470,6 @@ export default {
         this.titleTestWording = "You dont have any test result."
         return
       }
-=======
-        return
-      }
-      this.titlePaymentWording = "Your recent payments"
-    },
-
-    async checkTestLength() {
-      if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result."
-        return
-      }
->>>>>>> 71b1b94 (refactor: refactor code for get payment history and test result)
       this.titleTestWording = "Your recent test"
     },
 
