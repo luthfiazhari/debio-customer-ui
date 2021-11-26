@@ -142,7 +142,7 @@ import Banner from "@/common/components/Banner"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import {
-  ordersByCustomer, //temporary off
+  ordersByCustomer,
   getOrdersData
 } from "@/common/lib/polkadot-provider/query/orders"
 import {
@@ -152,7 +152,7 @@ import {
 } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
-// import localStorage from "@/common/lib/local-storage" //temporary off
+import localStorage from "@/common/lib/local-storage"
 import { mapState } from "vuex"
 import {
   REGISTERED,
@@ -245,7 +245,6 @@ export default {
     async getDataPaymentHistory() {
       try {
         const address = this.wallet.address
-
         let maxResults = 5;
         let listOrderId = await ordersByCustomer(this.api, address)
         if (listOrderId != null) {
