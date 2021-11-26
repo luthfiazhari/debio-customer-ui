@@ -218,7 +218,7 @@ export default {
         const address = this.wallet.address // use this for actual data
 
         // Get specimens
-        const specimens = await queryDnaTestResultsByOwner(this.api, dummyAddress)// change to address
+        const specimens = await queryDnaTestResultsByOwner(this.api, address)// change to address
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -244,8 +244,8 @@ export default {
 
     async getDataPaymentHistory() {
       try {
-        // const address = this.wallet.address
-        const dummyAddress = "5Da5aHSoy3Bxb7Kxo4HuPLY7kE9FKxEg93dVhCKeXJ5JGY25" // this for testing only
+        const address = this.wallet.address
+
         let maxResults = 5;
         let listOrderId = await ordersByCustomer(this.api, address)
         if (listOrderId != null) {
