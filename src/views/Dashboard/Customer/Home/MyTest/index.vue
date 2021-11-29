@@ -303,7 +303,7 @@ export default {
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
       })
-      const createdAt = dateSet.toLocaleString("en-US", { 
+      const createdAt = dateSet.toLocaleString("en-US", {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
