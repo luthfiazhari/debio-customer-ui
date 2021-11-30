@@ -458,7 +458,7 @@ export default {
 
     async checkPaymentLength() {
       if (!this.paymentHistory.length) {
-        this.titlePaymentWording = "You dont have made any order."
+        this.titlePaymentWording = "You dont have made any order"
         return
       }
       this.titlePaymentWording = "Your recent payments"
@@ -466,10 +466,10 @@ export default {
 
     async checkTestLength() {
       if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result."
+        this.titleTestWording = "You dont have any test result"
         return
       }
-      this.titleTestWording = "Your recent test"
+      this.titleTestWording = "Your recent tests"
     },
 
     checkSatus(status) {
