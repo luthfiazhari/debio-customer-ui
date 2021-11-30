@@ -205,7 +205,6 @@ export default {
   async created() {
     await this.getTestResultsData()
     await this.getDataPaymentHistory()
-
     await this.checkPaymentLength()
     await this.checkTestLength()
   },
@@ -219,7 +218,7 @@ export default {
         const address = this.wallet.address // use this for actual data
 
         // Get specimens
-        const specimens = await queryDnaTestResultsByOwner(this.api, address)
+        const specimens = await queryDnaTestResultsByOwner(this.api, address)// change to address
         if (specimens != null) {
           specimens.reverse();
           if (specimens.length < maxResults) {
@@ -459,7 +458,7 @@ export default {
 
     async checkPaymentLength() {
       if (!this.paymentHistory.length) {
-        this.titlePaymentWording = "You dont have made any order."
+        this.titlePaymentWording = "You dont have made any order"
         return
       }
       this.titlePaymentWording = "Your recent payments"
@@ -467,10 +466,10 @@ export default {
 
     async checkTestLength() {
       if (!this.testResult.length) {
-        this.titleTestWording = "You dont have any test result."
+        this.titleTestWording = "You dont have any test result"
         return
       }
-      this.titleTestWording = "Your recent test"
+      this.titleTestWording = "Your recent tests"
     },
 
     checkSatus(status) {
