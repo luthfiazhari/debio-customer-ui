@@ -78,7 +78,7 @@ const indexRoutes = [{
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Checkout")
     },
     {
-      path: "request-test/success",
+      path: "request-test/success/:hash?",
       name: "customer-request-test-success",
       meta: { pageHeader: "Success", parent: "customer-request-test" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/RequestTest/Success")
