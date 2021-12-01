@@ -270,6 +270,8 @@ export default {
     },
 
     iconSwitcher() {
+      console.log("masuk icon switcher")
+      console.log(this.myTest.serviceInfo.name, "service info name")
       switch (this.myTest.serviceInfo.name) {
       case "Covid-19 Testing":
         this.selectedIcon = virusIcon;
