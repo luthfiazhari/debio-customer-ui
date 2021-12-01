@@ -27,7 +27,7 @@
             .customer-my-test__table
               DataTable(
                 :headers="headers"
-                :items="orderHistory"
+                :items="testResult"
               )
                 template(class="titleSection" v-slot:[`item.serviceInfo.name`]="{item}")
                   div(class="detailLab d-flex align-center")
@@ -54,7 +54,7 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status != 'ResultReady'"
+                      v-if="item.status != 'Result Ready'"
                       v-show="item.status == 'Registered'"
                       height="25px"
                       width="50%"
@@ -65,7 +65,7 @@
 
                     Button(
                       v-if="item.status != 'Registered'"
-                      v-show="item.status == 'ResultReady'"
+                      v-show="item.status == 'Result Ready'"
                       height="25px"
                       width="50%"
                       dark
@@ -111,7 +111,6 @@ import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
 import {
-  ordersByCustomer,
   getOrdersData
 } from "@/common/lib/polkadot-provider/query/orders"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
@@ -126,11 +125,22 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
-import dataTesting from "./dataTesting.json"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
-
+import {
+  queryDnaTestResultsByOwner,
+  queryDnaTestResults,
+  queryDnaSamples
+} from "@/common/lib/polkadot-provider/query/genetic-testing"
+import {
+  REGISTERED,
+  REJECTED,
+  ARRIVED,
+  QUALITY_CONTROLLED,
+  WET_WORK,
+  RESULT_READY
+} from "@/common/constants/specimen-status"
 
 export default {
   name: "MyTest",
@@ -177,28 +187,18 @@ export default {
     BUCCAL_COLLECTION,
     medicalResearchIllustration,
     isLoadingOrderHistory: false,
-    isLoding: false
+    isLoding: false,
+    isLoadingTestResults: false,
+    testResult: []
   }),
 
   async mounted() {
-    await this.getOrderHistory()
-    console.log(this.orderHistory, "<=== order history")
-    // this.onSearchInput()
+    await this.getTestResultData()
   },
 
   methods: {
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
-    },
-
-    async onSearchInput() {
-      this.orderHistory = dataTesting.data.map(result => ({
-        ...result._source,
-        id: result._id,
-        updatedAt: new Date(parseInt(result._source.updatedAt)).toLocaleDateString(),
-        createdAt: new Date(parseInt(result._source.createdAt)).toLocaleDateString(),
-        timestamp: parseInt(result._source.createdAt)
-      }))
     },
 
     setStatusColor(status) { //change color for each order status
@@ -216,34 +216,39 @@ export default {
       return colors[status.toUpperCase()]
     },
 
-    async getOrderHistory() {//this for get order from substrate
+    async getTestResultData(){
+      this.isLoadingTestResults = true
       try {
-        this.isLoadingOrderHistory = true
+        this.testResult = []
         const address = this.wallet.address
-        const listOrderId = await ordersByCustomer(this.api, address)
-  
-        for (let i = 0; i < listOrderId.length; i++) {
-          const detailOrder = await getOrdersData(this.api, listOrderId[i])
-          const detaillab = await queryLabsById(this.api, detailOrder.sellerId)
-          const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-          this.prepareOrderData(detailOrder, detaillab, detailService)
+        const speciment = await queryDnaTestResultsByOwner(this.api, address)
+        if (speciment != null) {
+          speciment.reverse()
+          for (let i = 0; i < speciment.length; i++) {
+            const dnaTestResults = await queryDnaTestResults(this.api, speciment[i])
+            if (dnaTestResults != null) {
+              const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
+              const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
+              const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
+              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder)
+            }
+          }
         }
-        
-        this.orderHistory.sort(
-          (a, b) => parseInt(b.timestamp) - parseInt(a.timestamp)
-        )
-  
-        const status = localStorage.getLocalStorageByName("lastOrderStatus")
-        if (status) this.orderHistory[0].status = status
-        
+        this.isLoadingTestResults = false
       } catch (error) {
         console.log(error)
-      } finally {
-        this.isLoadingOrderHistory = false
+        this.isLoadingTestResults = false
       }
     },
 
-    prepareOrderData(detailOrder, detaillab, detailService) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
+      const feedback = {
+        rejectedTitle: dnaSample.rejectedTitle,
+        rejectedDescription: dnaSample.rejectedDescription
+      }
+
+      const orderId = detailOrder.id
       const title = detailService.info.name
       const description = detailService.info.description
       const serviceImage = detailService.info.image
@@ -263,7 +268,6 @@ export default {
         expectedDuration: expectedDuration,
         dnaCollectionProcess: dnaCollectionProcess
       }
-
       const labName = detaillab.info.name
       const address = detaillab.info.address
       const labImage = detaillab.info.profileImage
@@ -273,18 +277,16 @@ export default {
         address: address,
         profileImage: labImage
       }
-
       let icon = "mdi-needle";
       if (detailService.info.image != null) {
         icon = detailService.info.image;
       }
 
-      const number = detailOrder.id
       const dateSet = new Date(
-        parseInt(detailOrder.createdAt.replace(/,/g, ""))
+        parseInt(dnaTestResults.createdAt.replace(/,/g, ""))
       )
       const dateUpdate = new Date(
-        parseInt(detailOrder.updatedAt.replace(/,/g, ""))
+        parseInt(dnaTestResults.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
       const orderDate = dateSet.toLocaleString("en-US", {
@@ -294,7 +296,8 @@ export default {
         month: "long", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
-      })
+      });
+
       const updatedAt = dateUpdate.toLocaleString("en-US", { 
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
@@ -304,25 +307,36 @@ export default {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
-      });
-      const status = detailOrder.status
-      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId 
-      const order = {
+      })
+      const dnaSampleTrackingId = dnaTestResults.trackingId
+      const status = this.checkSatus(dnaSample.status)
+      
+      const result = {
+        orderId,
         icon,
-        number,
+        dnaSampleTrackingId,
         timestamp,
         status,
-        dnaSampleTrackingId,
         orderDate,
         serviceId,
         serviceInfo,
         labId,
         labInfo,
+        createdAt,
         updatedAt,
-        createdAt
+        labName,
+        feedback
       }
+      this.testResult.push(result)
+    },
 
-      this.orderHistory.push(order)
+    checkSatus(status) {
+      if (status == "Registered") return REGISTERED
+      if (status == "Arrived") return ARRIVED
+      if (status == "Rejected") return REJECTED
+      if (status == "QualityControlled") return QUALITY_CONTROLLED
+      if (status == "WetWork") return WET_WORK
+      if (status == "ResultReady") return RESULT_READY
     },
 
     checkLastOrder() {
@@ -387,8 +401,6 @@ export default {
     userAddress() {
       return JSON.parse(localStorage.getKeystore()) ["Address"]
     }
-
-
   }
 }
 </script>
@@ -396,12 +408,12 @@ export default {
 <style lang="sass" scoped>
   .customer-test
     &::v-deep
-      
+
 
   .customer-my-test
     margin: 35px 0 0 0
     width: 100%
-    height: 100% 
+    height: 100%
     background: #FFFFFF
 
 
