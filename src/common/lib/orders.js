@@ -26,3 +26,11 @@ export async function fetchPaymentDetails(hash) {
 
   return data;
 }
+
+export async function fetchBountyLists(hash) {
+  const { data: { data } } = await axios.get(
+    `${process.env.VUE_APP_BACKEND_API}orders/bounty_list/${hash}`
+  );
+
+  return data;
+}

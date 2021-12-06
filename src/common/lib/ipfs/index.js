@@ -1,5 +1,7 @@
 import ipfsWorker from "./ipfs-worker"
 import store from "@/store/index"
+import axios from "axios"
+import { getSignedUrl } from './gcs'
 
 export function upload({ fileChunk, fileName, fileType }) {
   const chunkSize = 10 * 1024 * 1024 // 10 MB
@@ -38,6 +40,35 @@ export function upload({ fileChunk, fileName, fileType }) {
   })
 }
 
+export async function syncDecryptedFromIPFS(path, pair, fileName, type) {
+  store.state.auth.loadingData = {
+    loading: true,
+    loadingText: "Decrypt File",
+  }
+  const channel = new MessageChannel()
+  channel.port1.onmessage = ipfsWorker.workerDownload
+
+  const typeFile = type
+  ipfsWorker.workerDownload.postMessage({ path, pair, typeFile }, [channel.port2])
+  ipfsWorker.workerDownload.onmessage = async (event) => {
+    store.state.auth.loadingData = {
+      loading: true,
+      loadingText: "Downloading File",
+    }
+
+    const signedUrl = await getSignedUrl(fileName, 'write')
+    await axios.put(
+      signedUrl,
+      event.data,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      }
+    )
+  }
+}
+
 export async function downloadDecryptedFromIPFS(path, secretKey, publicKey, fileName, type) {
   store.state.auth.loadingData = {
     loading: true,
@@ -62,7 +93,7 @@ export async function downloadDecryptedFromIPFS(path, secretKey, publicKey, file
     } else {
       download(event.data, fileName)
     }
-    //this.$set(this.filesLoading, this.fileDownloadIndex, false);
+    //this.$set(this.filesLoading, this.fileDownloadIndex, false)
   }
 }
 

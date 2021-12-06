@@ -1,5 +1,33 @@
 <template lang="pug">
   .customer-test
+    modalBounty(
+      :show="isShowModalBounty"
+      :title="computeModalTitle"
+      :sub-title="computeModalSubtitle"
+      :link="computeModalLink"
+      :loading="modalBountyLoading"
+    )
+      .modal-bounty__cta.d-flex.mt-8.justify-center
+        Button(
+          v-if="!!isBountyError"
+          color="secondary"
+          block
+          outlined
+          @click="isBountyError = null"
+        ) Try again
+
+        Button(
+          v-else-if="isSuccessBounty"
+          color="secondary"
+          width="100"
+          outlined
+          @click="handleSuccessBounty"
+        ) Ok
+
+        template(v-else)
+          Button(outlined color="secondary" width="100" @click="isShowModalBounty = false") Cancel
+          Button(color="secondary" width="100" @click="downloadFile") Yes
+
     ui-debio-banner.customer-test__banner(
       title="My Test"
       subtitle="Privacy-first biomedical process. Get your own biomedical sample at home, proceed it anonymously to expert and scientist!"
@@ -54,8 +82,8 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status != 'Result Ready'"
-                      v-show="item.status == 'Registered'"
+                      v-if="item.status !== 'ResultReady'"
+                      v-show="item.status === 'Registered'"
                       height="25px"
                       width="50%"
                       dark
@@ -64,18 +92,18 @@
                     ) Instruction
 
                     Button(
-                      v-if="item.status != 'Registered'"
-                      v-show="item.status == 'Result Ready'"
+                      v-if="item.status !== 'Registered'"
+                      v-show="item.status === 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
                       color="secondary"
-                      @click="goToStakeData"
+                      @click="handleSelectedBounty(item)"
                     ) Add as Bounty
 
                 template(v-slot:[`item.status`]="{item}")
                   .customer-my-test__status
-                  span(:style="{color: setStatusColor(item.status)}") {{ item.status }}
+                  span(:style="{color: setStatusColor(item.status)}") {{ item.status.replace(/([A-Z])/g, ' $1').trim() }}
           v-tab-item
             .customer-my-test__table
             StakingServiceTab(
@@ -90,31 +118,27 @@
               this.isLoding = true
               @close="showDialog=false"
             )
-            
-
-      modalBounty(
-        :show="isBounty"
-        title="Do you want to add your test result as a data bounty?"
-        sub-title="You can learn more about data bounty by seeing the information"
-        link="/"
-        :loading="isLoading"
-      )
-        .modal-bounty__cta.d-flex.mt-8
-          Button(outlined color="secondary" width="100" @click="cancelBounty") Cancel
-          Button(color="secondary" width="100" @click="submitBounty") Yes
 </template>
 
 <script>
 import { layersIcon, noteIllustration, medicalResearchIllustration } from "@/common/icons"
 import StakingServiceTab from "./StakingServiceTab.vue"
+import modalBounty from "./modalBounty.vue"
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
 import { mapState } from "vuex"
-import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
+import Kilt from "@kiltprotocol/sdk-js"
+import CryptoJS from "crypto-js"
+import localStorage from "@/common/lib/local-storage"
+import { u8aToHex } from "@polkadot/util"
+import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
+import { createSyncEvent } from "@/common/lib/ipfs/gcs"
+import { getCategories } from "@/common/lib/categories"
+import {
+  getOrdersData
+} from "@/common/lib/polkadot-provider/query/orders"
 import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
 import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
-import localStorage from "@/common/lib/local-storage"
-import modalBounty from "./modalBounty.vue"
 import {
   COVID_19,
   DRIED_BLOOD,
@@ -123,24 +147,20 @@ import {
   SALIVA_COLLECTION,
   BUCCAL_COLLECTION
 } from "@/common/constants/instruction-step.js"
+import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
 import {
+  queryDnaTestResultsByOwner,
+  queryDnaTestResults,
   queryDnaSamples
 } from "@/common/lib/polkadot-provider/query/genetic-testing"
-import {
-  REGISTERED,
-  REJECTED,
-  ARRIVED,
-  QUALITY_CONTROLLED,
-  WET_WORK,
-  RESULT_READY
-} from "@/common/constants/specimen-status"
-import { ordersByCustomer } from "@/common/lib/polkadot-provider/query/orders"
 
 export default {
   name: "MyTest",
+
+  mixins: [metamaskServiceHandler],
 
   components: {
     StakingServiceTab,
@@ -150,10 +170,17 @@ export default {
     ConfirmationDialog
   },
 
-  data: () => ({ 
-    layersIcon, 
-    noteIllustration, 
+  data: () => ({
+    layersIcon,
+    noteIllustration,
     cardBlock: false,
+    isSuccessBounty: false,
+    isShowModalBounty: false,
+    modalBountyLoading: false,
+    isBountyError: null,
+    selectedBounty: null,
+    publicKey: null,
+    secretKey: null,
     documents: null,
     tabs: null,
     isProcessed: true,
@@ -167,7 +194,7 @@ export default {
       { text: "Lab Name", value: "labInfo.name", sortable: true },
       { text: "Order Date", value: "createdAt", sortable: true },
       { text: "Last Update", value: "updatedAt", sortable: true },
-      { text: "Test Status", value: "status", sortable: true },
+      { text: "Test Status", value: "status", width: "115", sortable: true },
       {
         text: "Actions",
         value: "actions",
@@ -189,11 +216,78 @@ export default {
     testResult: []
   }),
 
-  async mounted() {
+  computed: {
+    ...mapState({
+      walletBalance: (state) => state.substrate.walletBalance,
+      api: (state) => state.substrate.api,
+      wallet: (state) => state.substrate.wallet,
+      lastEventData: (state) => state.substrate.lastEventData,
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      stakingId: (state) => state.lab.stakingId
+    }),
+
+    userAddress() {
+      return JSON.parse(localStorage.getKeystore()) ["Address"]
+    },
+
+    computeModalTitle() {
+      const title = this.isSuccessBounty
+        ? "Great! Your data has been placed on marketplace successfully!"
+        : "Do you want to add your test result as a data bounty?"
+
+      return this.isBountyError ? this.isBountyError : title
+    },
+
+    computeModalSubtitle() {
+      const subtitle = this.isSuccessBounty
+        ? "Congratulations! You get XX $DBIO as reward!"
+        : "You can learn more about data bounty by seeing the information"
+
+      return this.isBountyError ? "Something went wrong, please try again" : subtitle
+    },
+
+    computeModalLink() {
+      return this.isSuccessBounty || this.isBountyError ? null : "/"
+    }
+  },
+
+  watch: {
+    lastEventData(event) {
+      if (event === null) return
+      const dataEvent = JSON.parse(event.data.toString())
+      if (event.method === "DataStaked") {
+        this.$store.dispatch("substrate/addAnyNotification", {
+          address: this.wallet.address,
+          dataAdd: {
+            message: "Great! Your data has been placed on ocean marketplace successfully! You have recieve xx DBIO",
+            data: dataEvent,
+            route: "customer-data-bounty",
+            params: null
+          },
+          role: "customer"
+        })
+      }
+    },
+
+    mnemonicData(val) {
+      if (val) this.initialData()
+    }
+  },
+
+  async created() {
     await this.getTestResultData()
+
+    if (this.mnemonicData) await this.initialData()
   },
 
   methods: {
+    async initialData() {
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     toRequestTest() {
       this.$router.push({ name: "customer-request-test-select-lab"})
     },
@@ -218,27 +312,30 @@ export default {
       try {
         this.testResult = []
         const address = this.wallet.address
-        const orders = await ordersByCustomer(this.api, address)
-        if (orders != null) {
-          orders.reverse()
-          for (let i = 0; i < orders.length; i++) {
-            const detailOrder = await getOrdersData(this.api, orders[i])
-            if (detailOrder.status != "Cancelled" && detailOrder.status != "Unpaid") {
-              const dnaSample = await queryDnaSamples(this.api, detailOrder.dnaSampleTrackingId)
-              const detailLab = await queryLabsById(this.api, dnaSample.labId)
+  
+        const speciment = await queryDnaTestResultsByOwner(this.api, address)
+        if (speciment != null) {
+          speciment.reverse()
+          for (let i = 0; i < speciment.length; i++) {
+            const dnaTestResults = await queryDnaTestResults(this.api, speciment[i])
+            if (dnaTestResults != null) {
+              const dnaSample = await queryDnaSamples(this.api, dnaTestResults.trackingId)
+              const detaillab = await queryLabsById(this.api, dnaTestResults.labId)
+              const detailOrder = await getOrdersData(this.api, dnaTestResults.orderId)
               const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-              this.prepareTestResult(detailOrder, dnaSample, detailLab, detailService)
+              this.prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder)
             }
           }
         }
         this.isLoadingTestResults = false
       } catch (error) {
-        console.log(error)
-        this.isLoadingTestResults = false
+        console.error(error)
+      } finally {
+        this.isLoadingOrderHistory = false
       }
     },
 
-    prepareTestResult(detailOrder, dnaSample, detailLab, detailService) {
+    prepareTestResult(dnaTestResults, detaillab, detailService, dnaSample, detailOrder) {
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription
@@ -263,10 +360,10 @@ export default {
         expectedDuration: expectedDuration,
         dnaCollectionProcess: dnaCollectionProcess
       }
-      const labName = detailLab.info.name
-      const address = detailLab.info.address
-      const labImage = detailLab.info.profileImage
-      const labId = detailLab.info.boxPublicKey 
+      const labName = detaillab.info.name
+      const address = detaillab.info.address
+      const labImage = detaillab.info.profileImage
+      const labId = detaillab.info.boxPublicKey 
       const labInfo = { 
         name: labName,
         address: address,
@@ -302,9 +399,9 @@ export default {
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
         month: "long" // numeric, 2-digit, long, short, narrow
-      })
-      const dnaSampleTrackingId = dnaSample.trackingId
-      const status = this.checkSatus(dnaSample.status)
+      });
+      const status = dnaSample.status
+      const dnaSampleTrackingId = detailOrder.dnaSampleTrackingId
       
       const result = {
         orderId,
@@ -319,28 +416,17 @@ export default {
         labInfo,
         createdAt,
         updatedAt,
+        dnaTestResults,
         labName,
         feedback
       }
-      this.testResult.push(result)
-    },
 
-    checkSatus(status) {
-      if (status == "Registered") return REGISTERED
-      if (status == "Arrived") return ARRIVED
-      if (status == "Rejected") return REJECTED
-      if (status == "QualityControlled") return QUALITY_CONTROLLED
-      if (status == "WetWork") return WET_WORK
-      if (status == "ResultReady") return RESULT_READY
+      this.testResult.push(result)
     },
 
     checkLastOrder() {
       const status = localStorage.getLocalStorageByName("lastOrderStatus")
       this.isProcessed = status ? status : null
-    },
-
-    goToStakeData() {
-      this.isBounty = true
     },
 
     goToInstruction(item) {
@@ -364,8 +450,54 @@ export default {
       }
     },
 
-    submitBounty() {
-      this.isLoading = true
+    async handleSelectedBounty(val) {
+      this.selectedBounty = { ...val.dnaTestResults, ...val }
+      this.isShowModalBounty = true
+    },
+
+    handleSuccessBounty() {
+      this.isShowModalBounty = false
+
+      setTimeout(() => {
+        this.isSuccessBounty = false
+      }, 350)
+    },
+
+    async downloadFile() {
+      if (!this.selectedBounty) return
+
+      this.modalBountyLoading = true
+      try {
+        const pair = {
+          secretKey: this.secretKey,
+          publicKey: this.publicKey
+        }
+
+        await syncDecryptedFromIPFS(
+          this.selectedBounty.resultLink.replace("https://ipfs.io/ipfs/",""),
+          pair,
+          `${this.selectedBounty?.trackingId}.vcf`,
+          "text/vCard"
+        )
+
+        const serviceCategories = await getCategories()
+        const service = serviceCategories.find(
+          service => service.name === this.selectedBounty.serviceInfo.category
+        )
+
+        await createSyncEvent({
+          orderId: this.selectedBounty?.orderId,
+          serviceCategoryId: service.id,
+          fileName: `${this.selectedBounty?.trackingId}.vcf`
+        })
+
+        this.selectedBounty = null
+        this.isSuccessBounty = true
+        this.modalBountyLoading = false
+      } catch (e) {
+        this.isBountyError = e?.message
+        this.modalBountyLoading = false
+      }
     },
 
     cancelBounty() {
@@ -382,25 +514,44 @@ export default {
         name: "customer-dashboard"
       })
     }
-  },
-
-  computed: {
-    ...mapState({
-      walletBalance: (state) => state.substrate.walletBalance,
-      api: (state) => state.substrate.api,
-      wallet: (state) => state.substrate.wallet,
-      lastEventData: (state) => state.substrate.lastEventData,
-      stakingId: (state) => state.lab.stakingId
-    }),
-
-    userAddress() {
-      return JSON.parse(localStorage.getKeystore()) ["Address"]
-    }
   }
 }
 </script>
 
 <style lang="sass" scoped>
+.customer-test
+  &::v-deep
+    .banner__subtitle
+      max-width: 36.188rem !important
+
+.customer-my-test
+  width: 100%
+  height: 200px
+  background: #FFFFFF
+  margin-top: 30px
+
+  &__tabs
+    padding: 3px
+
+  &__table
+    padding: 10px
+
+  &__actions
+    padding: 35px
+    display: flex
+    align-items: center
+    gap: 30px
+    margin: 5px
+
+  &__status
+    color: #48A868
+
+  &__title-detail
+    margin: 0 5px 0 0
+    border-radius: 5px
+
+.modal-bounty__cta
+  gap: 40px
   .customer-test
     &::v-deep
 

@@ -1,16 +1,5 @@
 <template lang="pug">
   .customer-data-bounty
-    //- TODO: Move this to my test after merge
-    //- modalBounty(
-    //-   title="Do you want to add your test result as a data bounty?"
-    //-   sub-title="You can learn more about data bounty by seeing the information"
-    //-   link="/"
-    //-   loading
-    //- )
-    //-   .modal-bounty__cta.d-flex.mt-8.justify-center
-    //-     Button(outlined color="secondary" width="100") Cancel
-    //-     Button(color="secondary" width="100") Yes
-
     .customer-data-bounty__wrapper
       ui-debio-banner.customer-data-bounty__banner(
         title="Data Bounty"
@@ -32,61 +21,63 @@
             h2.customer-data-bounty__title Data Bounty
             p.customer-data-bounty__subtitle.mb-0 Your data bounty history
 
-        template(v-slot:[`item.name`]="{ item }")
+        template(v-slot:[`item._source.service_info.name`]="{ item }")
           .customer-data-bounty__item-wrapper
-            ui-debio-avatar.customer-data-bounty__item-image(:src="item.avatar" rounded)
+            ui-debio-avatar.customer-data-bounty__item-image(:src="item._source.service_info.image" rounded)
             .customer-data-bounty__item-details
-              .customer-data-bounty__item-name {{ item.name }}
-              .customer-data-bounty__item-speciment {{ item.speciment }}
+              .customer-data-bounty__item-name {{ item._source.service_info.name }}
+              .customer-data-bounty__item-speciment {{ item._source.dna_sample_tracking_id }}
 
-        template(v-slot:[`item.hash`]="{ item }")
+        template(v-slot:[`item._id`]="{ item }")
           .customer-data-bounty__hash.d-flex.align-center
-            .customer-data-bounty__item-hash {{ item.hash }}
-            Button.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item.hash)") Copy
+            .customer-data-bounty__item-hash {{ item._id }}
+            Button.customer-data-bounty__copy(color="primary" width="60" height="22" @click="handleCopy($event, item._id)") Copy
               
 </template>
 
 <script>
 import DataTable from "@/common/components/DataTable"
 import Button from "@/common/components/Button"
-import modalBounty from "./modalBounty" // TODO: Move this to my test after merge 
+import { fetchBountyLists } from "@/common/lib/orders"
 import { researchIllustration } from "@/common/icons" 
+import { mapState } from "vuex"
 
 export default {
   name: "CustomerDataBounty",
 
-  components: { DataTable, Button, modalBounty /* Move this to my test after merge */ },
+  components: { DataTable, Button },
 
   data: () => ({
     researchIllustration,
 
     bounties: [],
-
     headers: [
       {
         text: "Service Name",
-        value: "name",
+        value: "_source.service_info.name",
         sortable: true
       },
       {
         text: "Lab Name",
-        value: "labName",
+        value: "_source.lab_info.name",
+        width: "300",
         sortable: true
       },
       {
         text: "Description",
-        value: "desc",
+        value: "_source.service_info.description",
         width: "350",
         sortable: true
       },
       {
         text: "Reward",
         value: "reward",
+        width: "100",
         sortable: true
       },
       {
         text: "Hashcode",
-        value: "hash",
+        value: "_id",
         align: "center",
         sortable: false
       }
@@ -94,11 +85,22 @@ export default {
     cardBlock: false
   }),
 
+  computed: {
+    ...mapState({
+      wallet: (state) => state.substrate.wallet
+    })
+  },
+
   mounted() {
     window.addEventListener("resize", () => {
       if (window.innerWidth <= 959) this.cardBlock = true
       else this.cardBlock = false
     })
+  },
+
+  async created() {
+    const data = await fetchBountyLists(this.wallet.address)
+    this.bounties = data.map(d => ({ ...d, reward: "1 DBIO" }))
   },
 
   methods: {
@@ -164,7 +166,4 @@ export default {
     &::v-deep
       .banner__subtitle
         max-width: 29.2rem !important
-
-    .modal-bounty__cta
-      gap: 40px
 </style>
