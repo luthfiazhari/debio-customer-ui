@@ -82,7 +82,7 @@
                     ) Detail
                     
                     Button(
-                      v-if="item.status !== 'Result Ready'"
+                      v-if="item.status !== 'ResultReady'"
                       v-show="item.status === 'Registered'"
                       height="25px"
                       width="50%"
@@ -93,7 +93,7 @@
 
                     Button(
                       v-if="item.status !== 'Registered'"
-                      v-show="item.status === 'Result Ready'"
+                      v-show="item.status === 'ResultReady'"
                       height="25px"
                       width="50%"
                       dark
@@ -149,15 +149,7 @@ import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskService
 import ConfirmationDialog from "@/common/components/Dialog/ConfirmationDialog"
 import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
-import { queryDnaSamples } from "@/common/lib/polkadot-provider/query/genetic-testing"
-import {
-  REGISTERED,
-  REJECTED,
-  ARRIVED,
-  QUALITY_CONTROLLED,
-  WET_WORK,
-  RESULT_READY
-} from "@/common/constants/specimen-status"
+import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
 import { ordersByCustomer } from "@/common/lib/polkadot-provider/query/orders"
 
 export default {
@@ -324,7 +316,11 @@ export default {
               const dnaSample = await queryDnaSamples(this.api, detailOrder.dnaSampleTrackingId)
               const detailLab = await queryLabsById(this.api, dnaSample.labId)
               const detailService = await queryServicesById(this.api, detailOrder.serviceId)
-              this.prepareTestResult(detailOrder, dnaSample, detailLab, detailService)
+              let dnaTestResults = null
+              if (detailOrder.status == "Fulfilled") {
+                dnaTestResults = await queryDnaTestResults(this.api, detailOrder.dnaSampleTrackingId)
+              }
+              this.prepareTestResult(detailOrder, dnaSample, detailLab, detailService, dnaTestResults)
             }
           }
         }
@@ -335,7 +331,7 @@ export default {
       }
     },
 
-    prepareTestResult(detailOrder, dnaSample, detailLab, detailService) {
+    prepareTestResult(detailOrder, dnaSample, detailLab, detailService, dnaTestResults) {
       const feedback = {
         rejectedTitle: dnaSample.rejectedTitle,
         rejectedDescription: dnaSample.rejectedDescription
@@ -381,27 +377,27 @@ export default {
         parseInt(dnaSample.updatedAt.replace(/,/g, ""))
       )
       const timestamp = dateSet.getTime().toString();
-      const orderDate = dateSet.toLocaleString("en-US", {
+      const orderDate = dateSet.toLocaleString("en-GB", {
         weekday: "short", // long, short, narrow
         day: "numeric", // numeric, 2-digit
         year: "numeric", // numeric, 2-digit
-        month: "long", // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
         hour: "numeric", // numeric, 2-digit
         minute: "numeric"
       });
 
-      const updatedAt = dateUpdate.toLocaleString("en-US", { 
+      const updatedAt = dateUpdate.toLocaleString("en-GB", { 
         day: "numeric", // numeric, 2-digit
-        year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
+        year: "numeric" // numeric, 2-digit
       })
-      const createdAt = dateSet.toLocaleString("en-US", {
+      const createdAt = dateSet.toLocaleString("en-GB", {
         day: "numeric", // numeric, 2-digit
-        year: "numeric", // numeric, 2-digit
-        month: "long" // numeric, 2-digit, long, short, narrow
+        month: "short", // numeric, 2-digit, long, short, narrow
+        year: "numeric" // numeric, 2-digit
       })
       const dnaSampleTrackingId = dnaSample.trackingId
-      const status = this.checkSatus(dnaSample.status)
+      const status = dnaSample.status
       
       const result = {
         orderId,
@@ -417,18 +413,10 @@ export default {
         createdAt,
         updatedAt,
         labName,
-        feedback
+        feedback,
+        dnaTestResults
       }
       this.testResult.push(result)
-    },
-
-    checkSatus(status) {
-      if (status == "Registered") return REGISTERED
-      if (status == "Arrived") return ARRIVED
-      if (status == "Rejected") return REJECTED
-      if (status == "QualityControlled") return QUALITY_CONTROLLED
-      if (status == "WetWork") return WET_WORK
-      if (status == "ResultReady") return RESULT_READY
     },
 
     checkLastOrder() {
