@@ -83,11 +83,19 @@
           height="38"
           @click="onSubmit"
         ) Pay
+
+    ErrorDialog(
+      :show="showError"
+      :title="errorTitle"
+      :message="errorMsg"
+      @close="showError = false"
+    )
 </template>
 
 <script>
 
 import Button from "@/common/components/Button"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { mapState, mapMutations } from "vuex"
 import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
@@ -108,7 +116,8 @@ export default {
   name: "PaymentReceiptDialog",
 
   components: {
-    Button
+    Button,
+    ErrorDialog
   },
 
   mixins: [serviceHandlerMixin],
@@ -132,7 +141,9 @@ export default {
     detailOrder: null,
     status: "",
     orderId: "",
-    txHash: ""
+    txHash: "",
+    showError: false,
+    errorTitle: ""
   }),
 
   computed: {
@@ -259,31 +270,47 @@ export default {
       } catch (err) {
         this.isLoading = false
         this.password = ""
-        this.error = await errorHandler(err.message)
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       } 
     },
 
     async payOrder () {
-      // get last order id
-      this.lastOrder = await lastOrderByCustomer(
-        this.api,
-        this.wallet.address
-      )
-      this.detailOrder = await getOrdersData(this.api, this.lastOrder)
-
-      const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
-      const totalPrice = this.selectedService.price
-
-      if (stakingAmountAllowance < totalPrice ) {
-        const txHash = await approveDaiStakingAmount(
-          this.metamaskWalletAddress,
-          totalPrice
+      try {
+        // get last order id
+        this.lastOrder = await lastOrderByCustomer(
+          this.api,
+          this.wallet.address
         )
-        await getTransactionReceiptMined(txHash)
+        this.detailOrder = await getOrdersData(this.api, this.lastOrder)
+
+        const stakingAmountAllowance = await checkAllowance(this.metamaskWalletAddress)
+        const totalPrice = this.selectedService.price
+
+        if (stakingAmountAllowance < totalPrice ) {
+          const txHash = await approveDaiStakingAmount(
+            this.metamaskWalletAddress,
+            totalPrice
+          )
+          await getTransactionReceiptMined(txHash)
+        }
+
+        this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
+        await getTransactionReceiptMined(this.txHash)
+        
+      } catch (err) {
+        this.isLoading = false
+        this.password = ""
+        this.showError = true
+        const error = await errorHandler(err.message)
+        this.error = error.message
+        this.errorTitle = error.title
+        this.errorMsg = error.message
       }
 
-      this.txHash = await sendPaymentOrder(this.api, this.lastOrder, this.metamaskWalletAddress, this.ethSellerAddress)  
-      await getTransactionReceiptMined(this.txHash)
     },
 
     formatPrice(price) {
