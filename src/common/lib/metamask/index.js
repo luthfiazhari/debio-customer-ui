@@ -111,3 +111,12 @@ export async function setMetamaskWallet(address) {
     return accountList     
   }
 }
+
+export async function checkNetworkChain() {
+  console.log("masuk check network chain")
+  await window.ethereum.request({
+    method: "wallet_switchEthereumChain",
+    params: [{chainId: "0x1"}]
+  })
+  console.log("beres await")
+}

@@ -101,7 +101,7 @@ import { serviceHandlerMixin } from "@/common/lib/polkadot-provider"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile.js"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import { createOrder } from "@/common/lib/polkadot-provider/command/orders.js"
-import { startApp, getTransactionReceiptMined } from "@/common/lib/metamask"
+import { startApp, getTransactionReceiptMined, checkNetworkChain } from "@/common/lib/metamask"
 import { getBalanceETH, getBalanceDAI } from "@/common/lib/metamask/wallet.js"
 import { approveDaiStakingAmount, checkAllowance, sendPaymentOrder  } from "@/common/lib/metamask/escrow"
 import localStorage from "@/common/lib/local-storage"
@@ -210,6 +210,9 @@ export default {
       this.error = ""
       try {
         this.wallet.decodePkcs8(this.password)        
+        const res = await checkNetworkChain()
+        console.log("process change network id")
+        console.log(res)
         this.ethAccount = await startApp()
         if (this.ethAccount.currentAccount === "no_install") {
           this.isLoading = false
