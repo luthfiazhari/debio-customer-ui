@@ -122,6 +122,7 @@ import {
 
 import WalletBinding from "./WalletBinding.vue"
 import localStorage from "@/common/lib/local-storage"
+import { generalDebounce } from "@/common/lib/utils"
 import { queryBalance } from "@/common/lib/polkadot-provider/query/balance"
 import { ethAddressByAccountId } from "@/common/lib/polkadot-provider/query/user-profile"
 import { getBalanceDAI } from "@/common/lib/metamask/wallet"
@@ -251,12 +252,12 @@ export default {
 
       this.$refs.polkadot.$el.querySelector("input").value = "Address Copied!"
 
-      if (this.debounce) clearTimeout(this.debounce)
-
-      this.debounce = setTimeout(() => {
-        this.$refs.polkadot.$el.querySelector("input").value = this.$refs.polkadot.$attrs["data-wallet"]
-      }, 1000)
-
+      generalDebounce(
+        () => {
+          this.$refs.polkadot.$el.querySelector("input").value = this.$refs.polkadot.$attrs["data-wallet"]
+        },
+        1000
+      )
     },
 
     handleAvatar() {
@@ -413,9 +414,10 @@ export default {
         height: 2.75rem !important
 
         .navbar__connect-icon
-          width: 1.563rem !important
-          height: 1.563rem !important
-          animation: animateMetamask .3s infinite alternate !important
+          svg
+            width: 1.563rem !important
+            height: 1.563rem !important
+            animation: animateMetamask .3s infinite alternate !important
 
       &--logged:hover
           margin-left: unset !important
