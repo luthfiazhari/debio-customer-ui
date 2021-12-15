@@ -1,12 +1,6 @@
 <template lang="pug">
   v-card(class="degenics-datatable-card elevation-0")
     slot(name="prepend")
-    v-row
-      v-col
-        slot(name="top-left-slot")
-
-      v-col
-        slot(name="top-right-slot")
     //- <!-- Data Table -->
     v-data-table(
       class="degenics-data-table"
