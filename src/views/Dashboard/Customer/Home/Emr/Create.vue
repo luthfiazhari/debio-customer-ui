@@ -776,6 +776,7 @@ export default {
       cursor: pointer
 
     &::v-deep
+      
       .ui-debio-modal__card-title
         @include h2
         font-weight: 700
