@@ -41,21 +41,32 @@
         ) Submit
 
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
-      Button(
-        outlined
-        height="35px"
-        @click="goToRequestTestPage"
-        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-        color="primary"
-      ) Request a Test
+      template
+        v-tooltip(bottom)
+          template(v-slot:activator="{ on, attrs }")
+            Button(
+              outlined
+              height="35px"
+              @click="goToRequestTestPage"
+              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+              color="primary"
+              v-bind="attrs"
+              v-on="on"
+            ) Request a Test
+          span hover
 
-      Button(
-        outlined
-        height="35px"
-        @click="goToUploadEMR"
-        class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
-        color="primary"
-      ) Upload EMR
+        v-tooltip(bottom)
+          template(v-slot:activator="{ on, attrs }")
+            Button(
+              outlined
+              height="35px"
+              @click="goToUploadEMR"
+              class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
+              color="primary"
+              v-bind="attrs"
+              v-on="on"
+            ) Upload EMR
+          span hover
 
     .layout-dashboard__wrapper
       Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
