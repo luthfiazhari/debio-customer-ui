@@ -525,10 +525,14 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+  @import "@/common/styles/mixins.sass"
+
+
   .customer-test
     &::v-deep
       .banner__subtitle
         max-width: 36.188rem !important
+        @include text-h2-banner
 
   .customer-my-test
     width: 100%
