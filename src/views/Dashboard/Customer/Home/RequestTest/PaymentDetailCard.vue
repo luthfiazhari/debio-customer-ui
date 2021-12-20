@@ -120,7 +120,7 @@ import CancelDialog from "@/common/components/Dialog/CancelDialog"
 import PaymentReceiptDialog from "./PaymentReceiptDialog.vue"
 import { lastOrderByCustomer, getOrdersData } from "@/common/lib/polkadot-provider/query/orders.js"
 import PayRemainingDialog from "./PayRemainingDialog.vue"
-import { getDbioBalance } from "@/common/lib/debio-balance"
+import { getDbioBalance } from "@/common/lib/api"
 import {
   COVID_19,
   DRIED_BLOOD,
@@ -310,7 +310,7 @@ export default {
       @include body-text-3-opensans-medium
 
     &__line
-      margin: 1px 35px
+      margin: 1px 24px
 
     &__details
       margin-top: 5px
@@ -318,8 +318,7 @@ export default {
       justify-content: space-between
 
     &__operation
-      margin-top: 5px
-      margin-right: 38px
+      margin-right: 24px
       display: flex
       justify-content: flex-end
       @include body-text-3-opensans-medium

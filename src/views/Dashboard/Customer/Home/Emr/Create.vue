@@ -1,6 +1,13 @@
 <template lang="pug">
   .customer-create-emr
-    ui-debio-modal(
+    ErrorDialog(
+      :show="!!error"
+      :title="error ? error.title : ''"
+      :message="error ? error.message : ''"
+      @close="error = null"
+    )
+
+    ui-debio-modal.customer-create-emr__files-loading(
       :show="showLoadingFiles"
       title="File Upload"
       disable-dismiss
@@ -44,50 +51,60 @@
 
     ui-debio-modal(
       :show="showModalPassword"
-      title="Encrypt EMR files by input your password"
-      disable-dismiss
+      title="Encrypt EMR files"
+      iconSize="100"
       @onClose="showModalPassword = false; error = null"
     )
-      ui-debio-input(
-        :errorMessages="error"
-        :rules="$options.rules.password"
-        :type="showPassword ? 'text' : 'password'"
-        variant="small"
-        placeholder="Input Password"
-        :disabled="isLoading"
-        v-model="password"
-        outlined
-        block
-        :error="!!error"
-        validate-on-blur
-        @keyup.enter="finalSubmit"
-        @blur="error = null"
-        @isError="handleError"
-      )
-        ui-debio-icon(
-          slot="icon-append"
-          role="button"
-          size="18"
-          @click="handleShowPassword"
-          :icon="showPassword ? eyeIcon : eyeOffIcon"
-          stroke
-        )
+      template
+        ui-debio-icon(:icon="fileTextIcon" size="100" stroke)
 
-      .modal-password__cta.d-flex(slot="cta")
-        Button(
-          outlined
-          width="100"
-          color="secondary"
+        ui-debio-input(
+          :errorMessages="!!error ? error.message : ''"
+          :rules="$options.rules.password"
+          :type="showPassword ? 'text' : 'password'"
+          placeholder="Input Password"
+          label="Encrypt emr files by input your password"
           :disabled="isLoading"
-          @click="showModalPassword = false; error = null"
-        ) Cancel
+          v-model="password"
+          outlined
+          block
+          :error="!!error"
+          validate-on-blur
+          @keyup.enter="finalSubmit"
+          @blur="error = null"
+          @isError="handleError"
+        )
+          ui-debio-icon(
+            slot="icon-append"
+            role="button"
+            size="18"
+            @click="handleShowPassword"
+            :icon="showPassword ? eyeIcon : eyeOffIcon"
+            stroke
+          )
 
-        Button(
-          width="100"
-          :loading="isLoading"
-          color="secondary"
-          @click="finalSubmit"
-        ) Submit
+        p.modal-password__tx-info.mb-0.d-flex
+          span.modal-password__tx-text.mr-6.d-flex.align-center
+            | Estimated transaction weight
+            ui-debio-icon.ml-1(
+              :icon="alertIcon"
+              size="14"
+              stroke
+              @mouseenter="handleShowTooltip"
+            )
+            span.modal-password__tooltip(
+              @mouseleave="handleShowTooltip"
+              :class="{ 'modal-password__tooltip--show': showTooltip }"
+            ) Total fee paid in DBIO to execute this transaction.
+          span {{ txWeight }}
+
+        .modal-password__cta.d-flex(slot="cta")
+          Button(
+            block
+            :loading="isLoading"
+            color="secondary"
+            @click="finalSubmit"
+          ) Submit
 
     ui-debio-modal(
       :show="showModal"
@@ -178,6 +195,7 @@
           .customer-create-emr__files-title Uploaded Files
           .customer-create-emr__files-items
             .customer-create-emr__file-item.customer-create-emr__file-item--no-file.d-flex.align-center(
+              :class="{ 'customer-create-emr__file-item--error': fileEmpty }"
               v-if="!computeFiles.length"
               @click="showModal = true"
             )
@@ -254,24 +272,26 @@ import { mapState } from "vuex"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import ipfsWorker from "@/common/lib/ipfs/ipfs-worker"
+import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import cryptWorker from "@/common/lib/ipfs/crypt-worker"
-import { getEMRCategories } from "@/common/lib/emr"
+import { getEMRCategories } from "@/common/lib/api"
 import {
-  addElectronicMedicalRecordFile,
-  registerElectronicMedicalRecord
+  registerElectronicMedicalRecord,
+  getCreateRegisterEMRFee
 } from "@/common/lib/polkadot-provider/command/electronic-medical-record"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
+import { errorHandler } from "@/common/lib/error-handler"
 import errorMessage from "@/common/constants/error-messages"
 import Button from "@/common/components/Button"
-import { fileTextIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
+import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@/common/icons"
 
 export default {
   name: "CustomerEmrCreate",
 
   mixins: [validateForms],
 
-  components: { Button },
+  components: { Button, ErrorDialog },
 
   data: () => ({
     errorMessage,
@@ -279,6 +299,7 @@ export default {
     pencilIcon,
     trashIcon,
     eyeOffIcon,
+    alertIcon,
     eyeIcon,
 
     isEdit: false,
@@ -289,12 +310,13 @@ export default {
     error: null,
     isLoading: false,
     showLoadingFiles: false,
+    fileEmpty: false,
     clearFile: false,
-    registerId: null,
-    countFileAdded: 0,
+    showTooltip: false,
     password: "",
     publicKey: null,
     secretKey: null,
+    txWeight: null,
     emr: {
       title: "",
       category: "",
@@ -313,7 +335,8 @@ export default {
       api: (state) => state.substrate.api,
       wallet: (state) => state.substrate.wallet,
       lastEventData: (state) => state.substrate.lastEventData,
-      mnemonicData: (state) => state.substrate.mnemonicData
+      mnemonicData: (state) => state.substrate.mnemonicData,
+      web3: (state) => state.metamask.web3
     }),
 
     computeFiles() {
@@ -333,24 +356,11 @@ export default {
     lastEventData(event) {
       if (event !== null) {
         const dataEvent = JSON.parse(event.data.toString())
-        if (event.method === "ElectronicMedicalRecordFileAdded") {
+        if (event.method === "ElectronicMedicalRecordAdded") {
           if (dataEvent[1] === this.wallet.address) {
-            this.countFileAdded += 1
-
-            if (this.countFileAdded === this.emr.files.length) {
-              this.showLoadingFiles = false
-              this.registerId = null
-              this.resetState()
-              this.$router.push({ name: "customer-emr" })
-            } else {
-              this.handleUpload(this.registerId, this.emr.files[this.countFileAdded], this.countFileAdded)
-            }
-          }
-        } else if (event.method === "ElectronicMedicalRecordAdded") {
-          this.isLoading = false
-          this.registerId = dataEvent[0].id
-          if (dataEvent[0].ownerId === this.wallet.address && this.registerId) {
-            this.processFiles(this.registerId)
+            this.showLoadingFiles = false
+            this.resetState()
+            this.$router.push({ name: "customer-emr" })
           }
         }
       }
@@ -412,7 +422,7 @@ export default {
     },
 
     getFileIpfsUrl(file) {
-      const path = file.ipfsPath[0].data.path
+      const path = file.ipfsPath.data.path
       return `https://ipfs.io/ipfs/${path}`
     },
     
@@ -502,21 +512,25 @@ export default {
       this.clearFile = false
     },
 
-    handleModalPassword() {
+    async handleModalPassword() {
       this._touchForms("emr")
       const isEMRValid = Object.values(this.isDirty?.emr).every(v => v !== null && v === false)
       const isDocumentValid = Object.values(this.isDirty?.document).every(v => v !== null && v === false)
 
-      if (!isEMRValid || !isDocumentValid) return
+      if (!isEMRValid || (!isDocumentValid && this.emr.files.length < 1)) {
+        if (!this.emr.files.length) this.fileEmpty = true
 
+        return
+      }
+
+      this.fileEmpty = false
       this.clearFile = true
       this.showModalPassword = true
-    },
 
-    async processFiles(registerId) {
-      if (this.emr.files.length > 0) {
-        await this.handleUpload(registerId, this.emr.files[0], 0)
-      }
+      this.txWeight = "Calculating..."
+
+      const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, this.emr)
+      this.txWeight = `${this.web3.utils.fromWei(String(txWeight.partialFee), "ether")} DBIO`
     },
 
     handleShowPassword() {
@@ -529,63 +543,46 @@ export default {
       try {
         await this.wallet.decodePkcs8(this.password)
 
-        if (this.emr.files.length > 0) {
-          await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
+        if (this.emr.files.length === 0) return
+
+        for await (let [index, value] of this.emr.files.entries()) {
+          const dataFile = await this.setupFileReader({ value })
+          await this.upload({
+            encryptedFileChunks: dataFile.chunks,
+            fileName: dataFile.fileName,
+            index: index,
+            fileType: dataFile.fileType
+          })
         }
+
+        await registerElectronicMedicalRecord(this.api, this.wallet, this.emr)
+
+        this.showModalPassword = false
+        this.showLoadingFiles = true
+        this.isLoading = false
       } catch (e) {
-        this.error = e?.message
+        const error = await errorHandler(e.message)
+        this.error = error
         this.isLoading = false
       }
     },
 
-    async handleUpload(id, dataFile, index) {
-      this.error = null
-
-      try {
-        this.wallet.unlock(this.password)
-
-        const file = dataFile.file
-        const context = this
+    setupFileReader({ value }) {
+      return new Promise((resolve, reject) => {
+        const file = value.file
         const fr = new FileReader()
+
         fr.onload = async function () {
-          try {
-            // Upload
-            const uploaded = await context.upload({
-              encryptedFileChunks: dataFile.chunks,
-              fileName: dataFile.fileName,
-              fileType: dataFile.fileType,
-              index: index,
-              dataFile: dataFile
-            })
-
-            const link = context.getFileIpfsUrl(uploaded)
-
-            const dataBody = {
-              id: id,
-              title: dataFile.title,
-              description: dataFile.description,
-              recordLink: link
-            }
-            await addElectronicMedicalRecordFile(
-              context.api,
-              context.wallet,
-              dataBody
-            )
-          } catch (err) {
-            this.error = err.message
-          }
+          resolve(value)
         }
 
-        fr.readAsArrayBuffer(file)
+        fr.onerror = reject
 
-        this.showModalPassword = false
-        this.showLoadingFiles = true
-      } catch (e) {
-        this.error = e?.message
-      }
+        fr.readAsArrayBuffer(file)
+      })
     },
 
-    encrypt({ text, fileType, fileName }) {
+    async encrypt({ text, fileType, fileName }) {
       const context = this
       const arrChunks = []
       let chunksAmount
@@ -594,7 +591,7 @@ export default {
         publicKey: this.publicKey
       }
 
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         try {
           cryptWorker.workerEncryptFile.postMessage({ pair, text, fileType }) // Access this object in e.data in worker
           cryptWorker.workerEncryptFile.onmessage = async (event) => {
@@ -614,18 +611,20 @@ export default {
               })
             }
           }
+
+          this.fileEmpty = false
         } catch (err) {
           reject(new Error(err.message))
         }
       })
     },
 
-    upload({ encryptedFileChunks, fileName, fileType }) {
-      const chunkSize = 10 * 1024 * 1024 // 10 MB
+    async upload({ encryptedFileChunks, fileName, index, fileType }) {
+      const chunkSize = 30 * 1024 * 1024 // 30 MB
       let offset = 0
       const data = JSON.stringify(encryptedFileChunks)
       const blob = new Blob([data], { type: fileType })
-      return new Promise((resolve, reject) => {
+      const uploaded = await new Promise((resolve, reject) => {
         try {
           const fileSize = blob.size
           do {
@@ -638,16 +637,14 @@ export default {
           } while (chunkSize + offset < fileSize)
 
           let uploadSize = 0
-          const uploadedResultChunks = []
           ipfsWorker.workerUpload.onmessage = async (event) => {
-            uploadedResultChunks.push(event.data)
             uploadSize += event.data.data.size
 
             if (uploadSize >= fileSize) {
               resolve({
                 fileName: fileName,
                 fileType: fileType,
-                ipfsPath: uploadedResultChunks
+                ipfsPath: event.data
               })
             }
           }
@@ -655,6 +652,10 @@ export default {
           reject(new Error(err.message))
         }
       })
+
+      const link = this.getFileIpfsUrl(uploaded)
+
+      this.emr.files[index].recordLink = link
     },
 
     setPercent(file) {
@@ -665,6 +666,14 @@ export default {
       }, 2000)
 
       return selected?.percent
+    },
+
+    handleShowTooltip(e) {
+      if (e.type === "mouseenter") {
+        this.showTooltip = true
+      } else {
+        this.showTooltip = false
+      }
     },
 
     onRetry() {
@@ -723,6 +732,11 @@ export default {
         border-radius: 0.625rem
         background: #a1a1ff
 
+    &__files-loading
+      &::v-deep
+        .ui-debio-modal__card
+          max-width: 600px
+
     &__file-item
       padding: 12px 20px
       border-radius: 4px
@@ -736,6 +750,16 @@ export default {
 
       &--no-file
         height: 64px
+
+      &--error
+        border-color: #c400a5
+
+        &::v-deep
+          .customer-create-emr__file-icon > svg
+            color: #c400a5 !important
+
+        .customer-create-emr__file-name
+          color: #c400a5
 
     &__file-title
       font-weight: 600
@@ -794,6 +818,47 @@ export default {
     &__cta
       gap: 20px
 
+    &__tx-text
+      position: relative
+
+    &__tooltip
+      max-width: 143px
+      padding: 10px
+      position: absolute
+      top: 35px
+      z-index: 10
+      background: #fff
+      border: 1px solid #D3C9D1
+      right: -120px
+      transition: all .3s ease-in-out
+      visibility: hidden
+      opacity: 0
+      @include tiny-reg
+
+      &::after
+        position: absolute
+        content: ""
+        display: block
+        top: -20px
+        height: 20px
+        border-color: transparent transparent #FFF transparent
+        border-style: solid
+        border-width: 8px
+
+      &::before
+        position: absolute
+        content: ""
+        display: block
+        top: -21px
+        height: 20px
+        border-color: transparent transparent #D3C9D1 transparent
+        border-style: solid
+        border-width: 8px
+
+      &--show
+        opacity: 1
+        visibility: visible
+
   .modal-files-upload
     &__files
       display: flex
@@ -807,6 +872,10 @@ export default {
       justify-content: space-between
 
     &__file-name
+      max-width: 360px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
       @include body-text-medium-2
 
     &__progress
