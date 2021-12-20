@@ -42,7 +42,7 @@
 
     NavigationDrawer.layout-dashboard__sidebar(:items="computeNavs")
       template
-        v-tooltip(bottom)
+        v-tooltip(top)
           template(v-slot:activator="{ on, attrs }")
             Button(
               outlined
@@ -50,10 +50,10 @@
               @click="goToRequestTestPage"
               class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
               color="primary"
-              v-bind="attrs"
-              v-on="on"
+              :bind="attrs"
+              :on="on"
             ) Request a Test
-          span hover
+          span Get your biological sample tested or stake $DBIO to request Lab
 
         v-tooltip(bottom)
           template(v-slot:activator="{ on, attrs }")
@@ -63,10 +63,10 @@
               @click="goToUploadEMR"
               class="font-weight-bold sidebar-text mt-4 dg-raleway-font"
               color="primary"
-              v-bind="attrs"
-              v-on="on"
+              :bind="attrs"
+              :on="on"
             ) Upload EMR
-          span hover
+          span Upload your Electronic Medical Record
 
     .layout-dashboard__wrapper
       Navbar.layout-dashboard__navbar(:error="pageError" :notifications="localListNotification")
