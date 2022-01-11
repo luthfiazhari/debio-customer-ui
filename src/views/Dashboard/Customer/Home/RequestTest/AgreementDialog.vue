@@ -71,6 +71,8 @@ import { mapState } from "vuex"
 import ErrorDialog from "@/common/components/Dialog/ErrorDialog"
 import { createRequest } from "@/common/lib/polkadot-provider/command/service-request"
 import { getCreateRequestFee } from "@/common/lib/polkadot-provider/command/info"
+import errorMessage from "@/common/constants/error-messages"
+
 
 
 export default {
@@ -85,6 +87,7 @@ export default {
   },
 
   data: () => ({
+    errorMessage,
     currencyList: ["DBIO"], 
     currencyType: "DBIO",
     agree: false,
@@ -114,8 +117,8 @@ export default {
 
     amountRules() {
       return [
-        val => !!val || "Amount stake is required",
-        val => !!/^[0-9]\d*(\.\d{0,9})?$/.test(val) || "This field can only contain Numbers (e.g. 20.005)"
+        val => !!val || this.errorMessage.REQUIRED,
+        val => !!/^[0-9]\d*(\.\d{0,9})?$/.test(val) || this.errorMessage.INPUT_CHARACTER("Numbers (e.g. 20.005)")
       ]
     }
   },
