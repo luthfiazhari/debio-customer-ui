@@ -351,7 +351,7 @@ export default {
     emr: {
       title: [
         val => !!val || errorMessage.REQUIRED,
-        val => val && val.length < 50 || "Max. length 50 Char",
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
         val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
       ],
       category: [ val => !!val || errorMessage.REQUIRED ]
@@ -359,12 +359,12 @@ export default {
     document: {
       title: [
         val => !!val || errorMessage.REQUIRED,
-        val => val && val.length < 50 || "Max. length 50 Char",
+        val => val && val.length < 50 || errorMessage.MAX_CHARACTER(50),
         val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
       ],
       description: [
         val => !!val || errorMessage.REQUIRED,
-        val => val && val.length < 255 || "Max. length 255 Char",
+        val => val && val.length < 255 || errorMessage.MAX_CHARACTER(255),
         val => (val && /^[A-Za-z? ]?[A-Za-z0-9? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
       ],
       file: [
