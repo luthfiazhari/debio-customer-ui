@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils"
 import Icon from "@/common/components/Icon"
-// import { boxIcon } from "@/common/icons"
+import { boxIcon } from "@/common/icons"
 
 
 describe("Icon Component", () => {
@@ -12,7 +12,7 @@ describe("Icon Component", () => {
 
   it("Should render with SVG icon", () => {
     const wrapper = mount(Icon, {
-      propsData: { stroke: true }
+      propsData: { icon: boxIcon }
     })
 
     const iconComponent = wrapper.find("svg")
@@ -62,7 +62,7 @@ describe("Icon Component", () => {
     expect(iconComponent.attributes("viewBox")).toBe("0 0 40 40")
   })
 
-  it("Should render with default view-box", () => {
+  it("Should render with custom view-box", () => {
     const wrapper = mount(Icon, {
       propsData: {viewBox: "0 0 50 50"}
     })
@@ -81,7 +81,7 @@ describe("Icon Component", () => {
     expect(stroke).toContain("stroke")
   })
   
-  it("Should render with default stroke", () => {
+  it("Should render with default stroke width", () => {
     const wrapper = mount(Icon, {
       propsData: { stroke: true}
     })
