@@ -81,4 +81,10 @@ describe("DataTable Component", () => {
     expect(dataTableComponent.exists()).toBe(true)
     expect(dataTableComponent.find("tr").exists()).toBe(true)
   })
+
+  it("Should render Data Table custom scoped slots", () => {
+    const wrapper = shallowMount(DataTable, {
+      slots: {}
+    })
+  })
 })
