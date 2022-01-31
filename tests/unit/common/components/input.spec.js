@@ -1,6 +1,5 @@
 import { mount } from "@vue/test-utils"
 import Input from "@/common/components/Input"
-// import File from "@/common/components/File"
 // import Button from "@/common/components/Button"
 import Vue from "vue"
 import Vuetify from  "vuetify"
@@ -80,7 +79,7 @@ describe("Input component", () => {
     expect(inputComponent.attributes("style")).toBe("width: 200px;")
   })
 
-  it("Should render default width", () => {
+  it("Should render custom width", () => {
     wrapper = mount(Input, {
       propsData: { width: 185 }
     })
