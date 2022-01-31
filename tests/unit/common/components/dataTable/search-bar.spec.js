@@ -13,5 +13,7 @@ describe("Search Bar", () => {
     const searchBarComponent = mount(SearchBar)
     
     expect(searchBarComponent.exist()).toBe(true)
+
+    
   })
 })
