@@ -4,12 +4,19 @@ import Vue from "vue"
 import Vuetify from "vuetify"
 import Button from "@/common/components/Button"
 import EntrySelect from "@/common/components/DataTable/EntrySelect"
+import Avatar from "@/common/components/Avatar"
+import Icon from "@/common/components/Icon"
 
 Vue.use(Vuetify)
 let vuetify
 
 describe("DataTable Component", () => {
-  const stubs = { Button, EntrySelect }
+  const stubs = {
+    Button,
+    EntrySelect,
+    UiDebioAvatar: Avatar,
+    UiDebioIcon: Icon
+  }
   const items = [
     {
       a: "a", b: "b", c: "c", d: "d", e: "e", f: "f"
@@ -58,17 +65,6 @@ describe("DataTable Component", () => {
     expect(dataTableComponent.find("tr").exists()).toBe(true)
   })
 
-  // it("Should render Data Table with custom header", () => {
-  //   const wrapper = mount(DataTable, {
-  //     vuetify,
-  //     stubs,
-  //     propsData: { header, items}
-  //   })
-
-  //   const dataTableComponent = wrapper.find("thead").find("tr")
-  //   expect(dataTableComponent.findAllComponents("th")).toContain("div")
-  // })
-
   it("Should render Data Table with Data Item", () => {
     const wrapper = mount(DataTable, {
       vuetify,
@@ -82,9 +78,26 @@ describe("DataTable Component", () => {
     expect(dataTableComponent.find("tr").exists()).toBe(true)
   })
 
-  it("Should render Data Table custom scoped slots", () => {
-    const wrapper = shallowMount(DataTable, {
-      slots: {}
+
+  it("Should Render Data Table with footer", () => {
+    const wrapper = mount(DataTable, {
+      vuetify,
+      stubs,
+      propsData: { header, items, showFooter: true }
     })
+
+    const dataTableComponent = wrapper.find(".footer")
+    expect(dataTableComponent.exists()).toBe(true)
+  })
+
+  it("Should Render Data Table with no footer", () => {
+    const wrapper = mount(DataTable, {
+      vuetify,
+      stubs,
+      propsData: { header, items, showFooter: false }
+    })
+
+    const dataTableComponent = wrapper.find(".footer")
+    expect(dataTableComponent.exists()).toBe(false)
   })
 })
