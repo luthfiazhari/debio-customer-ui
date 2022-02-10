@@ -119,7 +119,28 @@ const indexRoutes = [{
       name: "customer-payment-details",
       meta: { pageHeader: "Details", parent: "customer-payment-history" },
       component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/PaymentHistory/Details")
+    },
+
+    // My Genetic Data
+    {
+      path: "genetic-data",
+      name: "customer-genetic-data",
+      meta: { pageHeader: "My Genetic Data" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData")
+    },
+    {
+      path: "add-genetic-data/:id?",
+      name: "customer-add-genetic-data",
+      meta: { pageHeader: "Genetic Data" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/Add")
+    },
+    {
+      path: "request-analysis",
+      name: "customer-request-analysis",
+      meta: { pageHeader: "My Genetic Data" },
+      component: () => import(/* webpackChunkName */ "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis")
     }
+
   ]
 }]
 export default indexRoutes
