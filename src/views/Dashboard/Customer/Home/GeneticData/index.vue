@@ -36,8 +36,9 @@
           
         v-tabs-items(v-model="tabs")
           v-tab-item
-            GeneticDataList
+            //- GeneticDataList
           v-tab-item
+            GeneticAnalysisList
 
 
 
@@ -46,12 +47,14 @@
 <script>
 import { geneticIllustration, plusCircle } from "@/common/icons"
 import GeneticDataList from "./GeneticDataList.vue"
+import GeneticAnalysisList from "./GeneticAnalysisList.vue"
 
 export default {
   name: "GeneticData",
 
   components: {
-    GeneticDataList
+    GeneticDataList,
+    GeneticAnalysisList
   },
 
   data:() => ({
