@@ -87,8 +87,8 @@ export default {
       }
     ],
     items: [],
-    iconShow: true,
-    iconDownloadShow: true,
+    iconShow: true, //temporary disable.
+    iconDownloadShow: false,
     publicKey: null,
     secretKey: null
   }),
@@ -185,8 +185,8 @@ export default {
 
     checkStatusData() {
       for(let i = 0; i < this.items.length; i++) {
-        if(this.items.length.status == "ResultReady") {
-          this.iconDownloadShow = false
+        if(this.items[i].status == "ResultReady") {
+          return this.iconDownloadShow = true
         }
       }
     }
