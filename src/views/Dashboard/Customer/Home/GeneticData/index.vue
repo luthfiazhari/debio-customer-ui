@@ -36,7 +36,7 @@
           
         v-tabs-items(v-model="tabs")
           v-tab-item
-            //- GeneticDataList
+            GeneticDataList
           v-tab-item
             GeneticAnalysisList
 
