@@ -19,7 +19,7 @@
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-analysis-list__actions
           ui-debio-icon(v-if="!iconShow" :icon="eyeIcon" size="16" role="button" stroke @click="toDetail()")
-          ui-debio-icon(v-if="iconDownloadShow" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload()")
+          ui-debio-icon(v-if="iconDownloadShow" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
 
 </template>
 
@@ -151,14 +151,14 @@ export default {
 
         const serviceId = geneticAnalysisOrdersData.serviceId
         const geneticAnalystServicesData = await geneticAnalystServices(this.api, serviceId)
-
         const dataResult = {
           trackingId: trackingId[i],
           serviceName: geneticAnalystServicesData.info.name,
           analystName: fullName,
           createdAt: createdAt,
           updatedAt: updatedAt,
-          status: geneticAnalysis.status
+          status: geneticAnalysis.status,
+          ipfsLink: geneticAnalysis.reportLink
         }
         this.items.push(dataResult)
       }
@@ -174,7 +174,6 @@ export default {
 
       const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
       const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
-
       await downloadDecryptedFromIPFS(
         path,
         this.secretKey,
