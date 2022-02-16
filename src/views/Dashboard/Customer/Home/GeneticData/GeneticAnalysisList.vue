@@ -12,13 +12,10 @@
         .d-flex.flex-column.genetic-analysis-list__name
           span {{ item.fullName }}
 
-      
-
       template(v-slot:[`item.status`]="{ item }")
         .d-flex.flex-column.genetic-analysis-list__status
           span {{ item.status }}
 
-    
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-analysis-list__actions
           ui-debio-icon(v-if="!iconShow" :icon="eyeIcon" size="16" role="button" stroke @click="toDetail()")
@@ -33,6 +30,10 @@ import { eyeIcon, downloadIcon } from "@/common/icons"
 import DataTable from "@/common/components/DataTable"
 import { geneticAnalysisByOwner, geneticAnalysisStorage, geneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
 import { geneticAnalysts, geneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst"
+import Kilt from "@kiltprotocol/sdk-js"
+import { u8aToHex } from "@polkadot/util"
+import CryptoJS from "crypto-js"
+import { downloadDecryptedFromIPFS } from "@/common/lib/ipfs"
 
 export default {
   name: "GeneticAnalysisList",
@@ -87,15 +88,36 @@ export default {
     ],
     items: [],
     iconShow: true,
-    iconDownloadShow: true
+    iconDownloadShow: true,
+    publicKey: null,
+    secretKey: null
   }),
+
+  watch: {
+    mnemonicData(val) {
+      if (val) this.initialData()
+    }
+  },
 
   async mounted() {
     this.fetchGeneticAnalysisData()
     this.checkStatusData()
   },
 
+  async created() {
+    if (this.mnemonicData) this.initialData()
+  },
+
+
+
   methods: {
+    async initialData(){
+      const cred = Kilt.Identity.buildFromMnemonic(this.mnemonicData.toString(CryptoJS.enc.Utf8))
+
+      this.publicKey = u8aToHex(cred.boxKeyPair.publicKey)
+      this.secretKey = u8aToHex(cred.boxKeyPair.secretKey)
+    },
+
     async fetchGeneticAnalysisData() {
       this.items = []
       const accountId = this.wallet.address
@@ -147,8 +169,19 @@ export default {
       // Open new tab with sending props geneticId for fetch detail
     },
 
-    toDownload(){
-      //Do something
+    async toDownload(item){
+      if (item.status !== "ResultReady") return
+
+      const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
+      const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
+
+      await downloadDecryptedFromIPFS(
+        path,
+        this.secretKey,
+        this.publicKey,
+        `[${item.serviceName} - ${item.analystName}] - ${fileName}`,
+        "application/pdf"
+      )
     },
 
     checkStatusData() {
