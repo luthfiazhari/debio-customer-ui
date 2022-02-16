@@ -70,7 +70,7 @@ export default {
         sortable: true
       },
       {
-        text: "Update Date",
+        text: "Last Update",
         value: "updatedAt",
         sortable: true
       },
