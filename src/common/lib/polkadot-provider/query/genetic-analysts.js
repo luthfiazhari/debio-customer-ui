@@ -3,3 +3,8 @@ export async function queryGeneticAnalysts(api, accountId) {
     .toHuman()
   return res
 }
+
+export async function queryGeneticAnalystServices(api, serviceId) {
+  let res = (await api.query.geneticAnalystServices.geneticAnalystServices(serviceId)).toHuman()
+  return res
+}
