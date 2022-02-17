@@ -28,8 +28,8 @@
 import { mapState } from "vuex"
 import { eyeIcon, downloadIcon } from "@/common/icons"
 import DataTable from "@/common/components/DataTable"
-import { geneticAnalysisByOwner, geneticAnalysisStorage, geneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
-import { geneticAnalysts, geneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analyst"
+import { queryGeneticAnalysisByOwner, queryGeneticAnalysisStorage, queryGeneticAnalysisOrders } from "@/common/lib/polkadot-provider/query/genetic-analysis"
+import { queryGeneticAnalysts, queryGeneticAnalystServices } from "@/common/lib/polkadot-provider/query/genetic-analysts"
 import Kilt from "@kiltprotocol/sdk-js"
 import { u8aToHex } from "@polkadot/util"
 import CryptoJS from "crypto-js"
@@ -122,10 +122,10 @@ export default {
     async fetchGeneticAnalysisData() {
       this.items = []
       const accountId = this.wallet.address
-      const trackingId = await geneticAnalysisByOwner(this.api, accountId)
+      const trackingId = await queryGeneticAnalysisByOwner(this.api, accountId)
 
       for (let i = 0; i < trackingId.length; i++) {
-        const geneticAnalysis = await geneticAnalysisStorage(this.api, trackingId[i])
+        const geneticAnalysis = await queryGeneticAnalysisStorage(this.api, trackingId[i])
 
         const dateCreated = new Date(parseInt(geneticAnalysis.createdAt.replace(/,/g, "")))
         const dateUpdated = new Date(parseInt(geneticAnalysis.updatedAt.replace(/,/g, "")))
@@ -144,14 +144,14 @@ export default {
 
         const geneticAnalysisTrackingId = geneticAnalysis.geneticAnalystId
 
-        const geneticAnalystsData = await geneticAnalysts(this.api, geneticAnalysisTrackingId)
+        const geneticAnalystsData = await queryGeneticAnalysts(this.api, geneticAnalysisTrackingId)
         const fullName = (geneticAnalystsData.info.firstName + " " + geneticAnalystsData.info.lastName)
 
         const orderId = geneticAnalysis.geneticAnalysisOrderId
-        const geneticAnalysisOrdersData = await geneticAnalysisOrders(this.api, orderId)
+        const geneticAnalysisOrdersData = await queryGeneticAnalysisOrders(this.api, orderId)
 
         const serviceId = geneticAnalysisOrdersData.serviceId
-        const geneticAnalystServicesData = await geneticAnalystServices(this.api, serviceId)
+        const geneticAnalystServicesData = await queryGeneticAnalystServices(this.api, serviceId)
         const dataResult = {
           trackingId: trackingId[i],
           serviceName: geneticAnalystServicesData.info.name,
@@ -175,6 +175,7 @@ export default {
 
       const fileName = item.ipfsLink.split("/").pop().replaceAll("%20", " ")
       const path = `${item.ipfsLink.split("/").slice(4, 5).join("")}/${fileName}`
+      
       await downloadDecryptedFromIPFS(
         path,
         this.secretKey,
