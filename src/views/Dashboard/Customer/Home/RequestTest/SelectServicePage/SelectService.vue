@@ -107,9 +107,7 @@ export default {
 
     async getServices () {
       if (!this.services) return
-      
       for (let i = 0; i < this.services.length; i++) {
-
         let {
           id: serviceId,
           lab_id: labId,
@@ -151,6 +149,8 @@ export default {
         const countServiceRate = serviceData.count_rating_service
         const detailPrice = this.services[i].info.prices_by_currency[0]
         const price = this.services[i].info.prices_by_currency[0].total_price.replaceAll(",", "")
+        const imageService = this.getImageLink(this.services[i].info.image)
+        serviceImage = imageService
 
         if (durationType === "WorkingDays") {
           durationType = "Days"
@@ -220,6 +220,13 @@ export default {
 
     toPaymentHistory () {
       this.$router.push({ name: "customer-payment-history" })
+    },
+
+    getImageLink(val){
+      if(val && val != ""){
+        return val
+      }
+      return "https://ipfs.io/ipfs/QmZveuvcQAbkcbcop28iqWrnCMoxN2n5SGzA3Hwr1cJ61i/debio-logo.png"
     }
   }
 }
