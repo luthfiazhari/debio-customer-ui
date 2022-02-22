@@ -148,7 +148,6 @@ export default {
 
         const orderId = geneticAnalysis.geneticAnalysisOrderId
         const geneticAnalysisOrdersData = await queryGeneticAnalysisOrders(this.api, orderId)
-        // console.log(geneticAnalysisOrdersData.status, "genetic analysis order data status")
 
         const serviceId = geneticAnalysisOrdersData.serviceId
         const geneticAnalystServicesData = await queryGeneticAnalystServices(this.api, serviceId)
@@ -163,7 +162,6 @@ export default {
             status: geneticAnalysis.status,
             ipfsLink: geneticAnalysis.reportLink
           }
-          // console.log(geneticAnalysisOrdersData.status, "genetic analysis order data status")
           this.items.push(dataResult)
         }
       }
