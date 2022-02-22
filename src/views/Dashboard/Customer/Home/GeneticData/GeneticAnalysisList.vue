@@ -18,8 +18,8 @@
 
       template(v-slot:[`item.actions`]="{ item }")
         .genetic-analysis-list__actions
-          ui-debio-icon(v-if="!iconShow" :icon="eyeIcon" size="16" role="button" stroke @click="toDetail()")
-          ui-debio-icon(v-if="iconDownloadShow" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
+          ui-debio-icon(v-show="!iconShow" :icon="eyeIcon" size="16" role="button" stroke @click="toDetail()")
+          ui-debio-icon(v-show="item.status === 'ResultReady'" :icon="downloadIcon" size="16" role="button" stroke @click="toDownload(item)")
 
 </template>
 
@@ -101,8 +101,7 @@ export default {
   },
 
   async mounted() {
-    this.fetchGeneticAnalysisData()
-    this.checkStatusData()
+    await this.fetchGeneticAnalysisData()
   },
 
   async created() {
@@ -149,19 +148,24 @@ export default {
 
         const orderId = geneticAnalysis.geneticAnalysisOrderId
         const geneticAnalysisOrdersData = await queryGeneticAnalysisOrders(this.api, orderId)
+        // console.log(geneticAnalysisOrdersData.status, "genetic analysis order data status")
 
         const serviceId = geneticAnalysisOrdersData.serviceId
         const geneticAnalystServicesData = await queryGeneticAnalystServices(this.api, serviceId)
-        const dataResult = {
-          trackingId: trackingId[i],
-          serviceName: geneticAnalystServicesData.info.name,
-          analystName: fullName,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          status: geneticAnalysis.status,
-          ipfsLink: geneticAnalysis.reportLink
+
+        if (geneticAnalysisOrdersData.status !== "Unpaid") {
+          const dataResult = {
+            trackingId: trackingId[i],
+            serviceName: geneticAnalystServicesData.info.name,
+            analystName: fullName,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            status: geneticAnalysis.status,
+            ipfsLink: geneticAnalysis.reportLink
+          }
+          // console.log(geneticAnalysisOrdersData.status, "genetic analysis order data status")
+          this.items.push(dataResult)
         }
-        this.items.push(dataResult)
       }
     },
 
@@ -183,14 +187,6 @@ export default {
         `[${item.serviceName} - ${item.analystName}] - ${fileName}`,
         "application/pdf"
       )
-    },
-
-    checkStatusData() {
-      for(let i = 0; i < this.items.length; i++) {
-        if(this.items[i].status == "ResultReady") {
-          return this.iconDownloadShow = true
-        }
-      }
     }
   }
 }
