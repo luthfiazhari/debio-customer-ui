@@ -231,6 +231,13 @@ export default {
         this.isRegistered = false
       }
     }
+  },
+
+  watch: {
+    async orderStatus(val) {
+      console.log(val, "vall")
+      if (val) await this.getGeneticAnalysisOrderDetail()
+    }
   }
 }
 </script>
