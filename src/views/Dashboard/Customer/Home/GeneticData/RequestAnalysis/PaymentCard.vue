@@ -235,7 +235,6 @@ export default {
 
   watch: {
     async orderStatus(val) {
-      console.log(val, "vall")
       if (val) await this.getGeneticAnalysisOrderDetail()
     }
   }
