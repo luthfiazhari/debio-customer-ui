@@ -128,6 +128,7 @@ export default {
     geneticLink: null,
     links: [],
     customerBoxPublicKey: null
+    // showLoading: false
   }),
 
   computed: {
@@ -447,5 +448,13 @@ export default {
       align-items: center
       justify-content: flex-end
       @include tiny-reg
+
+  .dialog-loading
+    width: 500
+    height: 450
+
+    &__card
+      background-color: white
+      padding-bottom: 51px
 
 </style>
