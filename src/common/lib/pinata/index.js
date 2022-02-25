@@ -1,31 +1,85 @@
-const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
-import { uploadFile } from "@debionetwork/pinata-ipfs"
+import Kilt from "@kiltprotocol/sdk-js"
+import axios from "axios"
+import NodeFormData from "form-data"
 
+export const uploadFile = val => {
+  const pinataKey = process.env.VUE_APP_PINATA_KEY
+  const pinataSecretKey = process.env.VUE_APP_PINATA_SECRET_KEY
+  const pinataJwtKey = process.env.VUE_APP_PINATA_JWT_KEY
 
-export async function uploadFileToPinata (val) { 
-  
-  const file = val.file
   const options = {
-    pinataMetadata: {
-      name: `${val.title}`
-    },
-    pinataOptions: {
-      cidVersion: 0
-    }
+    pinataMetadata: { name: `${val.title}` },
+    pinataOptions: { cidVersion: 0 }
   }
 
-  const result = await uploadFile(options, file, pinataJwtKey)
-  return result
+  return new Promise((resolve, reject) => {
+    const data = new NodeFormData()
+    const endpoint = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+
+    data.append("file", val.file)
+
+    if (options?.pinataMetadata) data.append("pinataMetadata", JSON.stringify(options?.pinataMetadata))
+    if (options?.pinataOptions) data.append("pinataOptions", JSON.stringify(options?.pinataOptions))
+
+    axios.post(endpoint, data, {
+      withCredentials: true,
+      maxContentLength: "Infinity", // NOTE: Allow axios to upload large file
+      maxBodyLength: "Infinity",
+      headers: {
+        "Content-type": `multipart/form-data boundary=${data._boundary}`,
+        "authorization": `Bearer ${pinataJwtKey}`,
+        "pinata_api_key": pinataKey,
+        "pinata_secret_api_key": pinataSecretKey
+      }
+    }).then(result => {
+      if (result.status !== 200) reject(new Error(`unknown server response while pinning File to IPFS: ${result}`))
+      else resolve(result.data)
+    }).catch(error => {
+      reject(error)
+    })
+  })
 }
 
-export function getFileUrl (cid) {
-  return `${process.env.VUE_APP_PINATA_GATEWAY}/ipfs/${cid}`
+export const getFileUrl = cid => {
+  return `https://ipfs.debio.network/ipfs/${cid}`
 }
 
-export async function downloadFile(link) {
-  console.log("Downloading..")
-  const result = await fetch(link)
-  const data = await result.json()
-  console.log("Downloaded !")
+export const downloadFile = async ipfsLink => {
+  console.log("Downloading...")
+
+  const response = await fetch(ipfsLink)
+  const data = await response.json()
+
+  console.log("Success Downloaded!")
+
   return data
+}
+
+export const decryptFile = (obj, pair, type) => {
+  const box = Object.values(obj[0].data.box)
+  const nonce = Object.values(obj[0].data.nonce)
+  let decryptedFile
+
+  const toDecrypt = {
+    box: Uint8Array.from(box),
+    nonce: Uint8Array.from(nonce)
+  }
+
+  if (type === "application/pdf") decryptedFile = Kilt.Utils.Crypto.decryptAsymmetric(toDecrypt, pair.publicKey, pair.secretKey)
+  else decryptedFile = Kilt.Utils.Crypto.decryptAsymmetricAsStr(toDecrypt, pair.publicKey, pair.secretKey)
+
+  if (!decryptedFile) console.log("Undefined File", decryptedFile)
+  else return decryptedFile
+}
+
+export const downloadDocumentFile = (data, fileName, type) => {
+  try {
+    const blob = new Blob([data], { type })
+    const a = document.createElement("a")
+    a.download = fileName
+    a.href = window.URL.createObjectURL(blob)
+    a.dataset.downloadurl = ["text/json", a.download, a.href].join(":")
+  } catch (error) {
+    console.error(error)
+  }
 }
