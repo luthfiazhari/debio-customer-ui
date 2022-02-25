@@ -20,9 +20,12 @@
           PaymentCard(
             :genetic-data="selectedGeneticData"
             :service="selectedAnalysisService"
+            @click="showLoading"
           )
 
-
+          LoadingDialog(
+            :show="isloading"
+          )
 
 </template>
 
@@ -31,7 +34,8 @@
 import { mapState } from "vuex"
 import ServiceAnalysisCard from "./ServiceAnalysisCard.vue"
 import PaymentCard from "./PaymentCard"
-// import SpinnerLoader from "@bit/joshk.vue-spinners-css.spinner-loader"
+import LoadingDialog from "@/common/components/Dialog/LoadingDialog"
+
 
 export default {
   name: "CheckoutPayment",
@@ -42,14 +46,14 @@ export default {
       { number: 2, title: "Select Service & Analyst", active: false },
       { number: 3, title: "Checkout and Payment", active: true },
       { number: 4, title: "Success", active: false }
-    ]
-    // isloading: false
+    ],
+    isloading: false
   }),
 
   components: {
     ServiceAnalysisCard,
-    PaymentCard
-    // SpinnerLoader
+    PaymentCard,
+    LoadingDialog
   },
 
 
@@ -69,10 +73,10 @@ export default {
   methods: {
     handleBack() {
       this.$router.push({ name: "customer-request-analysis-service" })
+    },
+    showLoading() {
+      this.isloading = true
     }
-    // showLoading() {
-    //   this.isloading = true
-    // }
   }
 }
 
@@ -125,14 +129,5 @@ export default {
       justify-content: space-between
       padding: 29px 35px 55px 35px
       gap: 32px
-
-  .dialog-spinner
-    height: 500
-    width: 400
-
-    &__card
-      background-color: white
-      padding-bottom: 51px
-
 
 </style>

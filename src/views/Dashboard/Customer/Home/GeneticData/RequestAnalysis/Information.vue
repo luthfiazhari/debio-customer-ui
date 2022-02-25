@@ -66,11 +66,11 @@ export default {
       @include button-1
 
     &__card
-      width: 335
-      height: 340
+      width: 340
+      height: 335
       background-color: #F5F7F9
       margin: 0 50px 
-      padding: 16px
+      padding: 24px
 
     &__card-text
       @include new-body-text-2-medium

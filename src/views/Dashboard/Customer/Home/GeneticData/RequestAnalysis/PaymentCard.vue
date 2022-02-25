@@ -35,7 +35,7 @@
           width="280"
           height="35"
           color="secondary"
-          @click="showInformation = true"
+          @click="onSubmit"
         ) Pay Now
 
       div(v-if="isCreated")
@@ -178,7 +178,7 @@ export default {
     },
 
     async onSubmit() {
-      this.isLoading = true
+      this.$emit("click")
       this.customerBoxPublicKey = await this.getCustomerPublicKey()
       const links = JSON.parse(this.selectedGeneticData.reportLink)
 
