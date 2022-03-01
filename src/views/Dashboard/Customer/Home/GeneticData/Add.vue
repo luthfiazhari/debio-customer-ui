@@ -33,7 +33,7 @@
           :rules="fileRule"
           :accept="['.txt', '.vcf', '.gz', '.zip', '.rar', '.7zip']"
           label="Upload File"
-          notes="(.vcf.gx, .vcf, .txt - Maximum file size is 200MB) "
+          notes="(.vcf.gz, .vcf, .txt - Maximum file size is 200MB) "
           placeholder="Choose File"
           validate-on-blur
         )
@@ -228,7 +228,8 @@ export default {
       const link = JSON.parse(detail.reportLink)  
       const fileName = link[0].split("/").pop()
       const res = await downloadFile(link[0])
-      let { box, nonce } = res.data
+      
+      let { box, nonce } = res.data.data
       box = Object.values(box) // Convert from object to Array
       nonce = Object.values(nonce) // Convert from object to Array
 
