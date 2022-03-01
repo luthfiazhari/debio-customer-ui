@@ -203,7 +203,7 @@
 
             span.upload-section__tx-price {{ txWeight }}
           Button(block :loading="isLoading" :disabled="isLoading" @click="handleSubmitForms" color="secondary") SUBMIT
-    
+
     UploadingDialog(
       :show="downloading"
       type="download"
@@ -571,15 +571,30 @@ export default {
     async handleDownloadFile(link, name) {
       try {
         this.downloading = true
+        let decryptedArrays = []
         const pair = { publicKey: this.orderDataDetails.customerBoxPublicKey, secretKey: this.secretKey }
         const type = "application/pdf"
         const computeFileName = name ? name : link.split("/").pop()
-  
-        const data = await downloadFile(link)
-        const decryptedFile = decryptFile(data, pair, type)
-        await downloadDocumentFile(decryptedFile, computeFileName, type)
+
+        if (/^\[/.test(link)) {
+          const links = JSON.parse(link)
+
+          for (let i = 0; i < links.length; i++) {
+            const data = await downloadFile(links[i])
+            const decryptedFile = decryptFile([data], pair, type)
+            decryptedArrays = [...decryptedArrays, ...decryptedFile]
+          }
+
+          await downloadDocumentFile(decryptedArrays, computeFileName, type)
+        } else {
+          const data = await downloadFile(link)
+          const decryptedFile = decryptFile(data, pair, type)
+          await downloadDocumentFile(decryptedFile, computeFileName, type)
+        }
+
       } catch (error) {
-        console.log(error)
+        console.error(error)
+      } finally {
         this.downloading = false
       }
     },
