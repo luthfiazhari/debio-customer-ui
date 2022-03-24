@@ -1,6 +1,6 @@
 <template lang="pug">
   .customer-select-service
-    .customer-select-service__title Select your preferred Service asddd
+    .customer-select-service__title Select your preferred Service
 
     template(v-if="showNoLab")
       NoLab
@@ -141,7 +141,6 @@ export default {
           service_flow: serviceFlow
         } = this.services[i]
 
-        console.log(serviceImage, "service image")
         const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
         const labRate = labRateData.rating
         const countRateLab = labRateData.count
@@ -184,7 +183,7 @@ export default {
           resultSample,
           serviceFlow
         }
-        console.log(service, "service obj baru")
+
         if (service.verificationStatus === "Verified") {
           this.serviceList.push(service)
         }
@@ -219,13 +218,6 @@ export default {
 
     toPaymentHistory () {
       this.$router.push({ name: "customer-payment-history" })
-    },
-
-    getImageLink(val){
-      if(val && val != ""){
-        return val
-      }
-      return "@/assets/debio-logo.png"
     }
   }
 }
