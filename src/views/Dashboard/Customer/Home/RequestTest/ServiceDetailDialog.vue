@@ -6,7 +6,8 @@
           v-icon mdi-close
 
       div.dialog-service__service-image
-        ui-debio-avatar(:src="selectedService.serviceImage" size="120" rounded)
+        v-img(v-if="!selectedService.serviceImage" :src="debioLogo" width="120" height="120" srounded contain)
+        ui-debio-avatar(v-else :src="selectedService.serviceImage" size="120" rounded)
         
       div.dialog-service__service-name
         .dialog-service__title {{ selectedService.serviceName }}
@@ -62,6 +63,7 @@ import { getLocations } from "@/common/lib/api"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
+import debioLogo from "@/assets/debio-logo.png"
 
 
 
@@ -72,7 +74,8 @@ export default {
   data: () => ({
     formatedDurationType: "",
     avatar: "",
-    countries: []
+    countries: [],
+    debioLogo
   }),
 
   async mounted () {

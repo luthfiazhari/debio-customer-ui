@@ -1,6 +1,6 @@
 <template lang="pug">
   .customer-select-service
-    .customer-select-service__title Select your preferred Service
+    .customer-select-service__title Select your preferred Service asddd
 
     template(v-if="showNoLab")
       NoLab
@@ -141,6 +141,7 @@ export default {
           service_flow: serviceFlow
         } = this.services[i]
 
+        console.log(serviceImage, "service image")
         const labRateData = await this.$store.dispatch("rating/getLabRate", labId)
         const labRate = labRateData.rating
         const countRateLab = labRateData.count
@@ -149,8 +150,6 @@ export default {
         const countServiceRate = serviceData.count_rating_service
         const detailPrice = this.services[i].info.prices_by_currency[0]
         const price = this.services[i].info.prices_by_currency[0].total_price.replaceAll(",", "")
-        const imageService = this.getImageLink(this.services[i].info.image)
-        serviceImage = imageService
 
         if (durationType === "WorkingDays") {
           durationType = "Days"
@@ -185,7 +184,7 @@ export default {
           resultSample,
           serviceFlow
         }
-              
+        console.log(service, "service obj baru")
         if (service.verificationStatus === "Verified") {
           this.serviceList.push(service)
         }
@@ -226,7 +225,7 @@ export default {
       if(val && val != ""){
         return val
       }
-      return "https://ipfs.io/ipfs/QmZveuvcQAbkcbcop28iqWrnCMoxN2n5SGzA3Hwr1cJ61i/debio-logo.png"
+      return "@/assets/debio-logo.png"
     }
   }
 }

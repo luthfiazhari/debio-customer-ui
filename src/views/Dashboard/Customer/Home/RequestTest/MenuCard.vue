@@ -3,7 +3,9 @@
     v-card.menu-card
       v-row.pa-3
         v-col(cols="4")
-          ui-debio-avatar(:src="icon" size="135" rounded)
+          v-img(v-if="!icon" :src="debioLogo" height="135" width="135" contain)
+
+          ui-debio-avatar(v-else :src="icon" size="135" rounded)
     
         v-col(cols="8")
           .menu-card__title
@@ -25,12 +27,14 @@
 
 import { mapState } from "vuex"
 import { getStates } from "@/common/lib/api"
+import debioLogo from "@/assets/debio-logo.png"
 
 export default {
   name: "MenuCard",
 
   data: () => ({
-    state: ""
+    state: "",
+    debioLogo
   }),
 
   props: {
