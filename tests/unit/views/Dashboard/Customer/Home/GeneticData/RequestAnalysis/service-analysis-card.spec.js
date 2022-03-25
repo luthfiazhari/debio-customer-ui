@@ -1,14 +1,18 @@
 import { createLocalVue, shallowMount, config } from "@vue/test-utils"
-import SuccessPage from "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/SuccessPage"
 import Vuex from "vuex"
 import Vuetify from "vuetify"
 import VueRouter from "vue-router"
+import ServiceAnalysisCard from "@/views/Dashboard/Customer/Home/GeneticData/RequestAnalysis/ServiceAnalysisCard"
 
-
-config.stubs["ui-debio-stepper"] = { template: "<div></div>" }
 config.stubs["v-card"] = { template: "<div></div>" }
+config.stubs["v-row"] = { template: "<div></div>" }
+config.stubs["v-col"] = { template: "<div></div>" }
+config.stubs["v-icon"] = { template: "<div></div>" }
+config.stubs["v-img"] = { template: "<div></div>" }
+config.stubs["ui-debio-avatar"] = { template: "<div></div>" }
 
-describe("Success page", () => {
+
+describe("Service Analysis card", () => {
   let container
   let localVue = null
 
@@ -24,22 +28,22 @@ describe("Success page", () => {
   })
 
   it("Should render", () => {
-    SuccessPage.methods = {
-      getAnalysisOrderDetail: jest.fn(),
-      getAnalysisStatus: jest.fn()
-    };
-    container = shallowMount(SuccessPage, {
+    
+    ServiceAnalysisCard.methods = {
+      getServiceDetail: jest.fn()
+    }
+
+    container = shallowMount(ServiceAnalysisCard, {
       localVue,
       vuetify: new Vuetify(),
       store: new Vuex.Store({
         state: {
           substrate: {
             api: "API",
-            wallet: "WALLET"
+            waller: "WALLET"
           }
         }
-      }),
-      router: new VueRouter()
+      })
     })
 
     expect(container.exists()).toBe(true)
