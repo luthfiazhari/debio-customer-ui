@@ -63,7 +63,6 @@ import { getLocations } from "@/common/lib/api"
 import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
-import debioLogo from "@/assets/debio-logo.png"
 
 
 
@@ -74,8 +73,7 @@ export default {
   data: () => ({
     formatedDurationType: "",
     avatar: "",
-    countries: [],
-    debioLogo
+    countries: []
   }),
 
   async mounted () {
