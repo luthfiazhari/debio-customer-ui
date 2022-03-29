@@ -48,11 +48,11 @@ import Kilt from "@kiltprotocol/sdk-js"
 import CryptoJS from "crypto-js"
 import { u8aToHex } from "@polkadot/util"
 import { fileTextIcon } from "@debionetwork/ui-icons"
-import { downloadFile, decryptFile } from "@/common/lib/pinata"
+import { downloadFile, decryptFile } from "@/common/lib/pinata-proxy"
 import {
   queryElectronicMedicalRecordById,
   queryElectronicMedicalRecordFileById
-} from "@/common/lib/polkadot-provider/query/electronic-medical-record"
+} from "@debionetwork/polkadot-provider"
 
 export default {
   name: "CustomerEmrDetails",

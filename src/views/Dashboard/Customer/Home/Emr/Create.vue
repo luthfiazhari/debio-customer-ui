@@ -193,14 +193,14 @@ import cryptWorker from "@/common/lib/ipfs/crypt-worker"
 import { getEMRCategories } from "@/common/lib/api"
 import {
   registerElectronicMedicalRecord,
-  getCreateRegisterEMRFee
-} from "@/common/lib/polkadot-provider/command/electronic-medical-record"
+  getAddElectronicMedicalRecordFee
+} from "@debionetwork/polkadot-provider"
 import { u8aToHex } from "@polkadot/util"
 import { validateForms } from "@/common/lib/validate"
 import { errorHandler } from "@/common/lib/error-handler"
 import { generalDebounce } from "@/common/lib/utils"
 import errorMessage from "@/common/constants/error-messages"
-import { uploadFile, getFileUrl } from "@/common/lib/pinata"
+import { uploadFile, getFileUrl } from "@/common/lib/pinata-proxy"
 import { fileTextIcon, alertIcon, pencilIcon, trashIcon, eyeOffIcon, eyeIcon } from "@debionetwork/ui-icons"
 
 const englishAlphabet = val => (val && /^[A-Za-z0-9!@#$%^&*\\(\\)\-_=+:;"',.\\/? ]+$/.test(val)) || errorMessage.INPUT_CHARACTER("English alphabet")
@@ -291,7 +291,7 @@ export default {
       handler: generalDebounce(async function (val) {
         this.txWeight = "Calculating..."
 
-        const txWeight = await getCreateRegisterEMRFee(this.api, this.wallet, val)
+        const txWeight = await getAddElectronicMedicalRecordFee(this.api, this.wallet, val)
         this.txWeight = `${Number(this.web3.utils.fromWei(String(txWeight.partialFee), "ether")).toFixed(4)} DBIO`
       }, 500)
     }

@@ -135,9 +135,9 @@ import { u8aToHex } from "@polkadot/util"
 import { syncDecryptedFromIPFS } from "@/common/lib/ipfs"
 import { createSyncEvent } from "@/common/lib/api"
 import { getCategories } from "@/common/lib/api"
-import { getOrdersData } from "@/common/lib/polkadot-provider/query/orders"
-import { queryLabsById } from "@/common/lib/polkadot-provider/query/labs"
-import { queryServicesById } from "@/common/lib/polkadot-provider/query/services"
+import { queryOrderDetailByOrderID } from "@debionetwork/polkadot-provider"
+import { queryLabById } from "@debionetwork/polkadot-provider"
+import { queryServiceById } from "@debionetwork/polkadot-provider"
 import {
   COVID_19,
   DRIED_BLOOD,
@@ -148,11 +148,10 @@ import {
 } from "@/common/constants/instruction-step.js"
 import metamaskServiceHandler from "@/common/lib/metamask/mixins/metamaskServiceHandler"
 import ConfirmationDialog from "./ConfirmationDialog.vue"
-import { unstakeRequest } from "@/common/lib/polkadot-provider/command/service-request"
 
 import { queryDnaSamples, queryDnaTestResults } from "@/common/lib/polkadot-provider/query/genetic-testing"
-import { ordersByCustomer } from "@/common/lib/polkadot-provider/query/orders"
-import { unstakeRequestFee } from "@/common/lib/polkadot-provider/command/info"
+import { unstakeRequest, unstakeRequestFee } from "@debionetwork/polkadot-provider"
+import { ordersByCustomer } from "@debionetwork/polkadot-provider"
 
 
 
@@ -328,12 +327,12 @@ export default {
         if (orders != null) {
           orders.reverse()
           for (let i = 0; i < orders.length; i++) {
-            const detailOrder = await getOrdersData(this.api, orders[i])
+            const detailOrder = await queryOrderDetailByOrderID(this.api, orders[i])
             const dnaTestResults = await queryDnaTestResults(this.api, detailOrder.dnaSampleTrackingId)
             if (detailOrder.status != "Cancelled" && detailOrder.status != "Unpaid") {
               const dnaSample = await queryDnaSamples(this.api, detailOrder.dnaSampleTrackingId)
-              const detailLab = await queryLabsById(this.api, dnaSample.labId)
-              const detailService = await queryServicesById(this.api, detailOrder.serviceId)
+              const detailLab = await queryLabById(this.api, dnaSample.labId)
+              const detailService = await queryServiceById(this.api, detailOrder.serviceId)
               this.prepareTestResult(dnaTestResults, detailOrder, dnaSample, detailLab, detailService)
             }
           }
